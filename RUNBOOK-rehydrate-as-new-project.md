@@ -209,7 +209,7 @@ git push origin main staging feature-<slug>
 ## Parameters (fill these in once)
 
 ```bash
-OLD_DIR="stockflow-starter-project"          # the directory you cloned into
+OLD_DIR="stockflow-f1-design-complete"       # the directory you cloned into
 NEW_NAME="stockflow-3"                       # chosen project name (kebab-case, 1-63 chars,
                                              #   lowercase, start with a letter) = Lakebase id
                                              #   + dir name + git repo name
@@ -232,7 +232,7 @@ These are the clone-time steps (you've likely already done them):
 ```bash
 git clone git@github.com:<owner>/<pulled-repo>.git
 cd <pulled-repo>
-git checkout staging      # a no-feature starter works on staging; on a feature snapshot, checkout its feature-* branch
+git checkout feature-f1-stock-visibility      # the branch carrying the F1 design state
 (cd client && npm install)                     # UI projects only
 ```
 

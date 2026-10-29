@@ -1,3 +1,17 @@
 {
-  "detected": []
+  "detected": [
+    {
+      "smell": "reflect-testlist-defect",
+      "cycle_ids": [],
+      "detail": "reflection gate: T51/T52/T53/T54 require a genuinely empty stock_records table ('no records on the live branch'), but the feature branch DB is shared with S1/S2 specs that seed randomUUID-keyed rows and the build forbids DELETE teardown. The empty state can never be reached reliably on a correct app (passes alone, fails at full-suite verify). Re-author so the empty response is obtained without depending on a globally empty table (e.g. Playwright page.route scoped by URL pathname === '/api/stock-records' returning [] for the empty-state specs, and a component test that supplies an empty list), keeping the real-DB path for populated tests.",
+      "story_id": "S2-stock-by-location-table",
+      "detected_at": "2026-10-29T18:38:15.261Z",
+      "resolution": "revised by human-proxy: full design re-run (test_list gate)",
+      "resolution_kind": "revised",
+      "revised_artifact_sha": "8ddb71d56624abd6404d885fb0c5980a97c8637f"
+    }
+  ],
+  "reflect_revise_count": {
+    "S2-stock-by-location-table": 1
+  }
 }

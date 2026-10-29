@@ -3,8 +3,8 @@
 A ready-to-run **starter snapshot** of StockFlow — a warehouse stock-management app for
 mid-market operations. The whole up-front product intent is already authored and the backlog
 is proposed and sized, **parked at the plan gate**: no feature has been designed or built yet.
-Clone it, stand it up as your own Lakebase-paired project, and start by committing a sprint and
-designing the first feature — instead of writing intake from a blank page.
+Clone it, stand it up as your own Lakebase-paired project, and start by designing the first
+feature — instead of writing intake from a blank page.
 
 It's built with **[Consort](https://github.com/databricks-solutions/consort)**, a spec-first,
 test-driven agent framework for apps on **Lakebase** (Databricks serverless Postgres).
@@ -16,7 +16,7 @@ test-driven agent framework for apps on **Lakebase** (Databricks serverless Post
 - **Planning** — a proposed, t-shirt-sized backlog (`planning/feature-proposals.md` +
   `estimates.json`), parked at the **plan gate**.
 - **Ten feature-request folders** (`features/F1-stock-visibility` … `F10-retire-tracking-code`) —
-  the open-ended asks you pick a sprint from.
+  the committed backlog, one open-ended ask per feature, that `/design` reads.
 - **Two branches:** `main` (the trunk) and `staging` (the working tier). There is **no feature
   branch yet** — the project lives on `staging` until you design the first feature.
 
@@ -47,13 +47,13 @@ parallel multi-feature snapshots alike; see
 [`RUNBOOK-rehydrate-as-new-project.md`](RUNBOOK-rehydrate-as-new-project.md) for the details and
 gotchas.)
 
-Then start the workflow:
+Then resume and design the first feature — the backlog is already authored, so there's no sprint to
+plan:
 
 ```
-/consort:start   # resumes; you're at the plan gate
-/plan            # commit a sprint from the proposals
+/consort:start            # resumes at the plan gate (the F1–F10 backlog is already authored)
 /design F1-stock-visibility
 ```
 
-`F1-stock-visibility` is the foundation feature (record + view stock by SKU and location) and a good
-first sprint; `/design` reads its `feature-request.md` and never overwrites it.
+`F1-stock-visibility` is the foundation feature (record + view stock by SKU and location) and the
+natural place to start; `/design` reads its `feature-request.md` and never overwrites it.

@@ -1,0 +1,76 @@
+{
+  "turns": [
+    {
+      "ordinal": 0,
+      "step": 0,
+      "label": "product-owner-intake",
+      "kind": "invoke-role",
+      "role": "product-owner",
+      "mode": "intake",
+      "dir": "0000-product-owner-intake",
+      "producedCount": 4,
+      "deletedCount": 0,
+      "hasTranscript": true
+    },
+    {
+      "ordinal": 1,
+      "step": 0,
+      "label": "ux-designer-establish",
+      "kind": "invoke-role",
+      "role": "ux-designer",
+      "mode": "establish",
+      "dir": "0001-ux-designer-establish",
+      "producedCount": 13,
+      "deletedCount": 0,
+      "hasTranscript": true
+    },
+    {
+      "ordinal": 2,
+      "step": 0,
+      "label": "spec-author-propose",
+      "kind": "invoke-role",
+      "role": "spec-author",
+      "mode": "propose",
+      "dir": "0002-spec-author-propose",
+      "producedCount": 13,
+      "deletedCount": 0,
+      "hasTranscript": true
+    },
+    {
+      "ordinal": 3,
+      "step": 0,
+      "label": "architect-reviewer-estimate",
+      "kind": "invoke-role",
+      "role": "architect-reviewer",
+      "mode": "estimate",
+      "dir": "0003-architect-reviewer-estimate",
+      "producedCount": 2,
+      "deletedCount": 0,
+      "hasTranscript": true
+    },
+    {
+      "ordinal": 4,
+      "step": 0,
+      "label": "product-owner-author-requests",
+      "kind": "invoke-role",
+      "role": "product-owner",
+      "mode": "author-requests",
+      "dir": "0004-product-owner-author-requests",
+      "producedCount": 16,
+      "deletedCount": 0,
+      "hasTranscript": true
+    },
+    {
+      "ordinal": 5,
+      "step": 0,
+      "label": "architect-reviewer-estimate-committed",
+      "kind": "invoke-role",
+      "role": "architect-reviewer",
+      "mode": "estimate-committed",
+      "dir": "0005-architect-reviewer-estimate-committed",
+      "producedCount": 3,
+      "deletedCount": 0,
+      "hasTranscript": true
+    }
+  ]
+}

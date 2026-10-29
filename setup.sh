@@ -183,7 +183,7 @@ if [ "$HAS_FEATURE" = 0 ]; then
   case "$TIERS" in 1) FEATURE_BRANCH=main ;; 2) FEATURE_BRANCH=staging ;; 3) FEATURE_BRANCH=dev ;; esac
   log "no feature branch (working branch is a tier) – starter; landing on the top tier '$FEATURE_BRANCH'"
 fi
-log "project-name=$NEW_NAME  land-branch=$FEATURE_BRANCH  feature-branches=[${FEATURE_BRANCHES[*]}]  tiers=$TIERS  gh-owner=${GH_OWNER:-<none>}  parent=$PARENT_DIR"
+log "project-name=$NEW_NAME  land-branch=$FEATURE_BRANCH  feature-branches=[${FEATURE_BRANCHES[*]:-}]  tiers=$TIERS  gh-owner=${GH_OWNER:-<none>}  parent=$PARENT_DIR"
 confirm "Proceed with these settings?" || die "aborted."
 
 # ---------------------------------------------------------------------------- Step 2: create Lakebase project
@@ -210,7 +210,7 @@ case "$TIERS" in
   3) LB_BRANCHES+=("staging:production" "dev:staging"); LB_PARENT_OF_FEATURE="dev";;
   *) die "unsupported --tiers '$TIERS' (use 1, 2, or 3).";;
 esac
-for _fb in "${FEATURE_BRANCHES[@]}"; do LB_BRANCHES+=("$_fb:$LB_PARENT_OF_FEATURE"); done
+for _fb in ${FEATURE_BRANCHES[@]:+"${FEATURE_BRANCHES[@]}"}; do LB_BRANCHES+=("$_fb:$LB_PARENT_OF_FEATURE"); done
 
 branch_exists() { databricks postgres get-branch "projects/$NEW_NAME/branches/$1" -p "$PROFILE" >/dev/null 2>&1; }
 for pair in "${LB_BRANCHES[@]}"; do
@@ -248,7 +248,7 @@ step "Step 5 – Detach from the repo it was pulled from"
 # local branches; the others exist only as origin/* refs – which `git remote remove` below
 # deletes. Without this, Step 6 would push only the local branches and the new repo would be
 # missing staging (and/or main), leaving the feature branch with no parent there.
-for b in main staging "${FEATURE_BRANCHES[@]}"; do
+for b in main staging ${FEATURE_BRANCHES[@]:+"${FEATURE_BRANCHES[@]}"}; do
   if ! git show-ref --verify --quiet "refs/heads/$b" && git show-ref --verify --quiet "refs/remotes/origin/$b"; then
     run git branch "$b" "origin/$b"
     log "materialized local branch '$b' from origin/$b (so Step 6 can push it)"
@@ -276,7 +276,7 @@ if [ "$DRY_RUN" = 1 ]; then
   log "[dry-run] per ancestry branch: git rm --cached \$(git ls-files --cached --ignored --exclude-standard)"
 else
   _ret_branch="$(git branch --show-current)"
-  for b in main staging "${FEATURE_BRANCHES[@]}"; do
+  for b in main staging ${FEATURE_BRANCHES[@]:+"${FEATURE_BRANCHES[@]}"}; do
     git show-ref --verify --quiet "refs/heads/$b" || continue
     if ! git checkout -q "$b" 2>/dev/null; then warn "5b: could not checkout '$b' (dirty tree?); skipping"; continue; fi
     _eph="$(git ls-files --cached --ignored --exclude-standard)"
@@ -300,7 +300,7 @@ else
   # Branches to push = the feature's whole git ancestry (Step 6): main + staging + feature.
   # git trunk is `main`, NOT a git branch named `production`.
   PUSH_BRANCHES=()
-  for b in main staging "${FEATURE_BRANCHES[@]}"; do
+  for b in main staging ${FEATURE_BRANCHES[@]:+"${FEATURE_BRANCHES[@]}"}; do
     git show-ref --verify --quiet "refs/heads/$b" && PUSH_BRANCHES+=("$b")
   done
   # de-dup (feature could equal main/staging in odd setups)

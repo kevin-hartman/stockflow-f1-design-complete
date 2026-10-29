@@ -29,6 +29,9 @@ that up, run:
 bash <(curl -sL https://tinyurl.com/consort-bootstrap)
 ```
 
+That installs the Consort plugin, pre-downloads the toolkit, and runs the environment doctor. Once it
+reports green, clone this starter and stand it up as your own project:
+
 ```bash
 git clone https://github.com/kevin-hartman/stockflow-starter-project.git
 cd stockflow-starter-project

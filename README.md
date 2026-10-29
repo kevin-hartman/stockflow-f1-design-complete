@@ -30,14 +30,19 @@ bash <(curl -sL https://tinyurl.com/consort-bootstrap)
 ```
 
 That installs the Consort plugin, pre-downloads the toolkit, and runs the environment doctor. Once it
-reports green, clone this starter and stand it up as your own project:
+reports green, clone this starter:
 
 ```bash
 git clone https://github.com/kevin-hartman/stockflow-starter-project.git
 cd stockflow-starter-project
 git checkout staging
 (cd client && npm install)
-./setup.sh my-stockflow          # your project name (kebab-case)
+```
+
+Then stand it up as your own project — replace `my-stockflow` with your project name (kebab-case):
+
+```bash
+./setup.sh my-stockflow
 ```
 
 `./setup.sh` creates a fresh Lakebase project (prod + staging), re-attaches git to a new repo of

@@ -1,0 +1,9 @@
+{
+  "sprint": "sprint-1",
+  "features": [
+    {
+      "id": "F1-stock-visibility",
+      "size": "L"
+    }
+  ]
+}

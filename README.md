@@ -23,7 +23,11 @@ test-driven agent framework for apps on **Lakebase** (Databricks serverless Post
 ## Stand it up as your own project
 
 **Prerequisite:** Consort installed and a Lakebase-enabled Databricks workspace. If you haven't set
-that up: `bash <(curl -sL https://tinyurl.com/consort-bootstrap)`.
+that up, run:
+
+```bash
+bash <(curl -sL https://tinyurl.com/consort-bootstrap)
+```
 
 ```bash
 git clone https://github.com/kevin-hartman/stockflow-starter-project.git

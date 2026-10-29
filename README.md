@@ -47,23 +47,12 @@ parallel multi-feature snapshots alike; see
 [`RUNBOOK-rehydrate-as-new-project.md`](RUNBOOK-rehydrate-as-new-project.md) for the details and
 gotchas.)
 
-Then start the workflow. First, resume the project:
+Then resume and design the first feature — the backlog is already authored, so there's no sprint to
+plan:
 
 ```
-/consort:start
-```
-
-It picks up where the starter leaves off and is **waiting for your approval** at the plan gate. Once
-you approve, begin building — either one feature at a time:
-
-```
+/consort:start            # resumes at the plan gate (the F1–F10 backlog is already authored)
 /design F1-stock-visibility
-```
-
-or the whole sprint at once:
-
-```
-/sprint
 ```
 
 `F1-stock-visibility` is the foundation feature (record + view stock by SKU and location) and the

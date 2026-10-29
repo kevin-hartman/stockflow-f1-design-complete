@@ -1,0 +1,28 @@
+{
+  "ordinal": 20,
+  "step": 0,
+  "label": "revise-route",
+  "kind": "revise-route",
+  "role": "test-strategist",
+  "story": "S2-stock-by-location-table",
+  "action": {
+    "kind": "revise-route",
+    "story": "S2-stock-by-location-table",
+    "role": "test-strategist",
+    "gate": "test_list",
+    "reason": "blocking smell \"reflect-testlist-defect\": reflection gate: T51/T52/T53/T54 require a genuinely empty stock_records table ('no records on the live branch'), but the feature branch DB is shared with S1/S2 specs that seed randomUUID-keyed rows and the build forbids DELETE teardown. The empty state can never be reached reliably on a correct app (passes alone, fails at full-suite verify). Re-author so the empty response is obtained without depending on a globally empty table (e.g. Playwright page.route scoped by URL pathname === '/api/stock-records' returning [] for the empty-state specs, and a component test that supplies an empty list), keeping the real-DB path for populated tests.",
+    "source": "smell:reflect-testlist-defect"
+  },
+  "produced": [
+    ".consort/features/F1-stock-visibility/.handback/test-strategist.S2-stock-by-location-table.md",
+    ".consort/features/F1-stock-visibility/pipeline.json",
+    ".consort/features/F1-stock-visibility/stories/S2-stock-by-location-table/test-list-patch.json",
+    ".consort/features/F1-stock-visibility/test-list.json",
+    ".consort/smells.json"
+  ],
+  "deleted": [
+    ".consort/features/F1-stock-visibility/stories/S2-stock-by-location-table/reflect-verdict.json",
+    ".consort/features/F1-stock-visibility/stories/S2-stock-by-location-table/test-list-per-story.json"
+  ],
+  "snapshotted": false
+}

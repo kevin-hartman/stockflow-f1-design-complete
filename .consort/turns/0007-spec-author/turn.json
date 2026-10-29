@@ -1,0 +1,39 @@
+{
+  "ordinal": 7,
+  "step": 0,
+  "label": "spec-author",
+  "kind": "invoke-role",
+  "role": "spec-author",
+  "story": "S1-file-stock-record",
+  "action": {
+    "kind": "invoke-role",
+    "role": "spec-author",
+    "story": "S1-file-stock-record"
+  },
+  "produced": [
+    ".consort/agent-live.log",
+    ".consort/features/F1-stock-visibility/feature-spec.md",
+    ".consort/features/F1-stock-visibility/pipeline.json",
+    ".consort/features/F1-stock-visibility/stories/S1-file-stock-record/acs/AC1-file-record-via-form.json",
+    ".consort/features/F1-stock-visibility/stories/S1-file-stock-record/acs/AC1-file-record-via-form.md",
+    ".consort/features/F1-stock-visibility/stories/S1-file-stock-record/acs/AC2-inline-required-field-errors.json",
+    ".consort/features/F1-stock-visibility/stories/S1-file-stock-record/acs/AC2-inline-required-field-errors.md",
+    ".consort/features/F1-stock-visibility/stories/S1-file-stock-record/acs/AC3-inline-invalid-quantity-error.json",
+    ".consort/features/F1-stock-visibility/stories/S1-file-stock-record/acs/AC3-inline-invalid-quantity-error.md",
+    ".consort/features/F1-stock-visibility/stories/S1-file-stock-record/acs/AC4-optional-detail-omitted.json",
+    ".consort/features/F1-stock-visibility/stories/S1-file-stock-record/acs/AC4-optional-detail-omitted.md",
+    ".consort/features/F1-stock-visibility/stories/S1-file-stock-record/acs/AC5-same-key-updates-in-place.json",
+    ".consort/features/F1-stock-visibility/stories/S1-file-stock-record/acs/AC5-same-key-updates-in-place.md",
+    ".consort/features/F1-stock-visibility/stories/S1-file-stock-record/story.json",
+    ".consort/features/F1-stock-visibility/stories/S2-stock-by-location-table/story.json",
+    ".consort/features/F1-stock-visibility/stories/S3-sku-detail-view/story.json"
+  ],
+  "deleted": [],
+  "snapshotted": false,
+  "transcript": {
+    "role": "spec-author",
+    "model": "opus",
+    "toolCount": 2,
+    "finalTextChars": 598
+  }
+}

@@ -68,11 +68,11 @@ jobs:
       - name: Resolve substrate ref
         # The runtime substrate (scripts/lk) resolves the substrate from .lakebase/scm-utils-ref;
         # CI follows the SAME ref so a scm-utils-ref bump takes effect here without editing
-        # this workflow (FEIP-8050, Finding 24). Falls back to v0.3.11,
+        # this workflow (FEIP-8050, Finding 24). Falls back to v0.3.12,
         # the version this project was scaffolded from, when .lakebase/scm-utils-ref is absent.
         run: |
           SCM_UTILS_REF="$(tr -d '[:space:]' < .lakebase/scm-utils-ref 2>/dev/null || true)"
-          SCM_UTILS_REF="${SCM_UTILS_REF:-v0.3.11}"
+          SCM_UTILS_REF="${SCM_UTILS_REF:-v0.3.12}"
           echo "SCM_UTILS_REF=${SCM_UTILS_REF}" >> "$GITHUB_ENV"
           # Registry-first for version tags, with a GitHub fallback when the registry
           # cannot serve the tarball yet: a freshly-published version is blocked by
@@ -99,7 +99,7 @@ jobs:
         # Routes through the substrate's lakebase-detect-language CLI so
         # the substrate.s marker-file detection (mirrors lakebase-schema-migrate's auto-
         # detect) is the single source of truth across pr.yml + merge.yml +
-        # the substrate's migrate runners. 0.3.11 is
+        # the substrate's migrate runners. 0.3.12 is
         # substituted at scaffold time to the substrate version that produced
         # this project.
         run: |
@@ -109,32 +109,13 @@ jobs:
           echo "lang=$LANG" >> $GITHUB_OUTPUT
           echo "Detected language: $LANG"
 
-      - name: Set up JDK (probe local)
-        id: jdk-probe
+      - name: Set up JDK
         if: steps.detect-lang.outputs.lang == 'java'
-        run: |
-          JH=""
-          if [ "$(uname)" = "Darwin" ]; then
-            JH="$(/usr/libexec/java_home 2>/dev/null || true)"
-          elif command -v java >/dev/null 2>&1 && java -version >/dev/null 2>&1; then
-            JH="$(dirname $(dirname $(readlink -f $(which java))))"
-          fi
-          if [ -n "$JH" ] && [ -x "$JH/bin/java" ]; then
-            echo "JAVA_HOME=$JH" >> $GITHUB_ENV
-            echo "local_jdk=found" >> $GITHUB_OUTPUT
-            echo "Using local JDK: $JH"
-            "$JH/bin/java" -version
-          else
-            echo "local_jdk=missing" >> $GITHUB_OUTPUT
-            echo "No local JDK; will fall back to actions/setup-java in the next step."
-          fi
-
-      - name: Set up JDK (download via actions/setup-java fallback)
-        if: steps.detect-lang.outputs.lang == 'java' && steps.jdk-probe.outputs.local_jdk == 'missing'
         uses: actions/setup-java@v4
         with:
-          java-version: '25'
+          java-version: '21'
           distribution: 'temurin'
+          cache: 'maven'
 
       - name: Set Java env vars
         if: steps.detect-lang.outputs.lang == 'java'

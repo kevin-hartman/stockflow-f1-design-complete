@@ -122,8 +122,14 @@ git remote set-url origin "git@github.com:$GH_OWNER/$DURABLE.git"
 cd .. && mv <current-dir> "$DURABLE" && cd "$DURABLE"       # match the local dir to the repo
 ```
 
-Then substitute the new name in the one self-referential spot the shipped docs carry, so a
+Then substitute the new name in the self-referential spots the shipped docs carry, so a
 future clone's parameters line up:
+- **`README.md`:** rewrite it to describe THIS snapshot's captured state, not the project it was
+  cloned/rehydrated from — the README is INHERITED, so it is the easiest thing to ship stale. Fix the
+  title, the "what's in it" + branch list, and especially the `git clone <url>`: they must name
+  `$DURABLE` and the state actually captured (a design-complete snapshot says the feature is designed
+  and ready to build on its `feature-*` branch — NOT "starter … parked at the plan gate … no feature
+  branch yet"). Refresh it on all branches (forward-merge like the rest of item 1).
 - **This runbook, the Parameters block below:** set `OLD_DIR="$DURABLE"` – `OLD_DIR` is "the
   directory you cloned into," i.e. this snapshot's own name. Commit this change on all branches
   before (or with) the rename.

@@ -1,0 +1,59 @@
+{
+  "estimates": [
+    {
+      "feature_id": "F1-stock-visibility",
+      "size": "L",
+      "rationale": "Foundation: first schema + migration (unique sku,location upsert), full layered API, SPA shell + 3 UI stories with E2E against real branch."
+    },
+    {
+      "feature_id": "F2-stock-adjustment",
+      "size": "M",
+      "rationale": "In-place correction plus audit table (timestamp + typed actor) and non-negative check; one form + API."
+    },
+    {
+      "feature_id": "F3-inbound-receipt",
+      "size": "M",
+      "rationale": "Supplier reference data + receive write path into existing stock rows with inline validation."
+    },
+    {
+      "feature_id": "F4-outbound-pick",
+      "size": "M",
+      "rationale": "Pick write path with transactional overcommit rejection and field-named error round-trip."
+    },
+    {
+      "feature_id": "F5-cycle-count",
+      "size": "M",
+      "rationale": "Count capture, variance computation, and reconcile write; moderate UI flow."
+    },
+    {
+      "feature_id": "F6-split-tracking-code-expand",
+      "size": "L",
+      "rationale": "Additive expand migration with delimiter backfill, dual-write, integrity probe surfaced in app; data-preservation risk."
+    },
+    {
+      "feature_id": "F9-stock-search",
+      "size": "S",
+      "rationale": "Read-only filter over existing table with index access pattern and no-match empty state."
+    },
+    {
+      "feature_id": "F7-multi-warehouse",
+      "size": "XL",
+      "rationale": "Re-keys stock scope across every table and endpoint with default-warehouse backfill migration."
+    },
+    {
+      "feature_id": "F8-barcode-scan",
+      "size": "L",
+      "rationale": "Scan-driven input across receive/pick/adjust/count with 200ms feedback budget."
+    },
+    {
+      "feature_id": "F10-retire-tracking-code",
+      "size": "S",
+      "rationale": "Contract migration dropping combined code with reversible round-trip test; gated on F6."
+    },
+    {
+      "feature_id": "F6-split-tracking-code",
+      "size": "L",
+      "rationale": "Additive expand migration with delimiter backfill (NULL on nonconforming), integrity probe surfaced in app, stage pills + migration overlay, parent-aware branch schema diff; live-data preservation risk."
+    }
+  ]
+}

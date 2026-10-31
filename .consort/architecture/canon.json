@@ -1,0 +1,68 @@
+{
+  "established_by": "F1-stock-visibility",
+  "established_at": "2026-10-29T18:31:51.869Z",
+  "ac_layers": [
+    "E2E",
+    "API"
+  ],
+  "nfr_posture": [
+    {
+      "category": "data-integrity",
+      "requirement": "F1's initial migration is reversible (PI5); later additive migrations preserve stock_records rows. The immutable timestamp+actor audit governs inventory ADJUSTMENTS, which F1 does not introduce (F2-F5) – N/A for F1 beyond reversibility."
+    },
+    {
+      "category": "correctness",
+      "requirement": "A filed quantity is never negative: rejected at the boundary (422 naming quantity) and by CHECK quantity >= 0. Overcommit/pick is N/A in F1 (no pick operation until F3)."
+    },
+    {
+      "category": "data-integrity",
+      "requirement": "Each (sku, location) is uniquely addressable; a re-file is resolved at write time by an atomic upsert, never a duplicate or an error page. location is stored verbatim (canonical)."
+    },
+    {
+      "category": "operability",
+      "requirement": "Acceptance/integration tests run against the paired Lakebase branch via DATABASE_URL; no mock, stub, sqlite or in-memory substitute."
+    },
+    {
+      "category": "operability",
+      "requirement": "The UI is the React SPA under client/; the boundary returns JSON only (renders_via react). Form submits are async with no full-page reload."
+    },
+    {
+      "category": "performance",
+      "requirement": "F1 has no barcode-scan interaction (N/A until scan-driven forms land); the write endpoint stays well inside the budget so later scan UX is not blocked."
+    },
+    {
+      "category": "correctness",
+      "requirement": "Validation errors name the offending field and render inline next to it; never a generic 'bad request'. Status->text mapping goes through the client describeError() helper."
+    },
+    {
+      "category": "operability",
+      "requirement": "F1's migration is purely additive (a new table); no existing table is altered or dropped."
+    },
+    {
+      "category": "correctness",
+      "requirement": "Omitted optional detail is stored as NULL (never '' or a placeholder) so S2/S3 can render 'not tracked' per field; the rendering half is owned by S2/S3's ACs."
+    },
+    {
+      "category": "operability",
+      "requirement": "N/A for F1 – search/filter is explicitly F9 (out of scope). F1 only ensures the stock_records (sku, location) columns exist for F9 to index; F9 will declare the access_pattern."
+    }
+  ],
+  "invariant_patterns": [
+    {
+      "type": "unique",
+      "brief": "A composite UNIQUE (sku, location) constraint rejects a second row for the same pair; the write path upserts against it (ON CONFLICT DO UPDATE) so re-filing updates in place."
+    },
+    {
+      "type": "not_null",
+      "brief": "sku and location are NOT NULL: an insert omitting either is rejected by the database."
+    },
+    {
+      "type": "check",
+      "brief": "CHECK (quantity >= 0): a direct insert/update with a negative quantity is rejected by the database."
+    },
+    {
+      "type": "migration_reversible",
+      "brief": "The initial create_table migration is reversible: downgrade to its down_revision drops stock_records, and upgrade head recreates the table with its columns, UNIQUE (sku, location), NOT NULL and CHECK constraints present again (schema recreated; no data survival implied)."
+    }
+  ]
+}

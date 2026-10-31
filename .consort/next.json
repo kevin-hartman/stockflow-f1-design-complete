@@ -1,0 +1,47 @@
+{
+  "scope": "feature",
+  "feature": "F1-stock-visibility",
+  "state": {
+    "coarse_phase": "feature",
+    "derived_phase": "build",
+    "stories": {
+      "S1-file-stock-record": "ready",
+      "S2-stock-by-location-table": "ready",
+      "S3-sku-detail-view": "ready"
+    },
+    "open_gates": [],
+    "blockers": []
+  },
+  "primary_action": {
+    "kind": "design-complete",
+    "describe": "orchestrator END design (complete)"
+  },
+  "options": [
+    {
+      "id": "resume",
+      "title": "Resume the drive",
+      "hil_prompt": "Resume the drive to carry out: orchestrator END design (complete)?",
+      "kind": "action",
+      "enact": {
+        "bin": "consort-drive",
+        "args": [
+          "--feature",
+          "F1-stock-visibility",
+          "--only",
+          "design"
+        ]
+      }
+    },
+    {
+      "id": "hold",
+      "title": "Stop here (checkpoint)",
+      "hil_prompt": "Checkpoint and resume later?",
+      "kind": "noop",
+      "enact": null
+    }
+  ],
+  "awaiting_human": false,
+  "summary": "feature F1-stock-visibility is mid-flight (build). The next step is: orchestrator END design (complete).",
+  "authoritative_playbook_version": "0.4.33",
+  "generated_at": "2026-10-31T22:45:25.259Z"
+}

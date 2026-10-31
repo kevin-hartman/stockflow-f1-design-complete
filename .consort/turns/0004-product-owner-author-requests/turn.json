@@ -1,0 +1,39 @@
+{
+  "ordinal": 4,
+  "step": 0,
+  "label": "product-owner-author-requests",
+  "kind": "invoke-role",
+  "role": "product-owner",
+  "mode": "author-requests",
+  "action": {
+    "kind": "invoke-role",
+    "role": "product-owner",
+    "mode": "author-requests"
+  },
+  "produced": [
+    ".consort/agent-live.log",
+    ".consort/drive.pid",
+    ".consort/features/F1-stock-visibility/feature-request.md",
+    ".consort/features/F10-retire-tracking-code/feature-request.md",
+    ".consort/features/F2-stock-adjustment/feature-request.md",
+    ".consort/features/F3-inbound-receipt/feature-request.md",
+    ".consort/features/F4-outbound-pick/feature-request.md",
+    ".consort/features/F5-cycle-count/feature-request.md",
+    ".consort/features/F6-split-tracking-code/feature-request.md",
+    ".consort/features/F7-multi-warehouse/feature-request.md",
+    ".consort/features/F8-barcode-scan/feature-request.md",
+    ".consort/features/F9-stock-search/feature-request.md",
+    ".consort/planning/feature-proposals.md",
+    ".consort/run-config.json",
+    ".consort/sprints/sprint-1/backlog.json",
+    ".consort/sprints/sprint-1/requested.json"
+  ],
+  "deleted": [],
+  "snapshotted": false,
+  "transcript": {
+    "role": "product-owner",
+    "model": "opus",
+    "toolCount": 3,
+    "finalTextChars": 169
+  }
+}

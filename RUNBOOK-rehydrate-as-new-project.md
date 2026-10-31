@@ -77,19 +77,26 @@ git switch feature-<slug>
 git add .consort/features/<F> .consort/smells.json
 ```
 
-**3. Dashboard replay records – force-added on the feature branch.** Two things drive the
-dashboard's run view, and **both are gitignored by default**, so both must be force-added:
+**3. Dashboard replay records – force-added on the feature branch.** Three things drive the
+dashboard's run view, and **all are gitignored by default**, so all three must be force-added:
 - `.consort/agent-log.jsonl` – the append-only **event stream** the dashboard reconstructs the
   turn / phase / gate timeline from. This is the one that is easy to miss: without it the
   dashboard shows **no turn history at all**, even when the turn directories are present.
 - `.consort/turns/**` – each turn's `turn.json` + `transcript.md`, the per-turn drill-down the
   timeline links to.
+- `.consort/next.json` – the drive's reconciled **stop-state pointer** (the resumable gate / next
+  action). Without it, a FRESH CLONE's dashboard + `/consort:start` preflight show the stale
+  **last role turn** instead of the gate until a drive run regenerates it (the "dashboard parks on
+  the architect/navigator turn, not the gate" footgun). Shipping it lets a clone show the resumable
+  state IMMEDIATELY, before any drive run. It does **not** need to stay tracked on the rehydrated
+  project: Step 5b (`git rm --cached` of the tracked-but-ignored set) untracks it there — **keep on
+  disk** — so the live drive treats it as normal gitignored churn again, and Step 7h refreshes it.
 
-Force-add both, then commit the corpus + replay records together:
+Force-add all three, then commit the corpus + replay records together:
 
 ```bash
-git add -f .consort/agent-log.jsonl .consort/turns
-git commit -m "capture <F> run: design corpus for resume + event log and turns for dashboard replay"
+git add -f .consort/agent-log.jsonl .consort/turns .consort/next.json
+git commit -m "capture <F> run: design corpus for resume + event log, turns, and next.json for dashboard replay"
 git push
 ```
 
@@ -209,7 +216,7 @@ git push origin main staging feature-<slug>
 ## Parameters (fill these in once)
 
 ```bash
-OLD_DIR="stockflow-starter-project"          # the directory you cloned into
+OLD_DIR="stockflow-f1-design-complete"          # the directory you cloned into
 NEW_NAME="stockflow-3"                       # chosen project name (kebab-case, 1-63 chars,
                                              #   lowercase, start with a letter) = Lakebase id
                                              #   + dir name + git repo name

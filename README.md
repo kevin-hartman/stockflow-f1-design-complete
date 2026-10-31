@@ -1,75 +1,83 @@
-# StockFlow starter project
+# StockFlow – F1 design-complete snapshot
 
-A ready-to-run **starter snapshot** of StockFlow — a warehouse stock-management app for
-mid-market operations. The whole up-front product intent is already authored and the backlog
-is proposed and sized, **parked at the plan gate**: no feature has been designed or built yet.
-Clone it, stand it up as your own Lakebase-paired project, and start by designing the first
-feature — instead of writing intake from a blank page.
+## What this is
+
+A **ready-to-build snapshot** of StockFlow, a warehouse-management app for a mid-market
+operation that has outgrown spreadsheets. **V1** lets the team see and adjust stock at one
+warehouse – file a SKU's stock at a location, see it in a scannable by-location table, and drill
+into a SKU's detail – as a React single-page client on a JSON API.
 
 It's built with **[Consort](https://github.com/databricks-solutions/consort)**, a spec-first,
-test-driven agent framework for apps on **Lakebase** (Databricks serverless Postgres).
+test-driven agent framework for apps on **Lakebase** (Databricks serverless Postgres). Consort
+normally walks a feature through two lanes: a *design* lane (plan → spec → UX → architecture →
+tests) and a *build* lane (TDD: RED → GREEN → REFACTOR).
 
-## What's in it
+**The purpose of this repo is to skip the design lane and go straight to build.** The planning
+and the entire F1 design lane are already authored and frozen at their gates – so you can
+stand this up as your own project and start the TDD build loop immediately, without redoing
+any of the up-front design work.
 
-- **Intake** — `product-overview.md`, `nfrs.md`, and the UX design system (`design/design-brief.md`,
-  `design/design-guide.*`, `design/ia.md`, `client/src/styles/*`).
-- **Planning** — a proposed, t-shirt-sized backlog (`planning/feature-proposals.md` +
-  `estimates.json`), parked at the **plan gate**.
-- **Ten feature-request folders** (`features/F1-stock-visibility` … `F10-retire-tracking-code`) —
-  the committed backlog, one open-ended ask per feature, that `/design` reads.
-- **Two branches:** `main` (the trunk) and `staging` (the working tier). There is **no feature
-  branch yet** — the project lives on `staging` until you design the first feature.
+## Where we are
 
-## Stand it up as your own project
+Design is complete; no build code has been written yet.
 
-**Prerequisite:** Consort installed and a Lakebase-enabled Databricks workspace. If you haven't set
-that up, run:
+- **Planning:** complete. Sprint `v1` is locked, with the F1–F10 backlog proposed and sized.
+- **Feature F1 – "Stock visibility":** design complete – feature-spec, UX design-guide,
+  architecture, db-design, and the ordered test-list are all authored and gated (in `.consort/`).
+  All three stories are at an approved spec gate, ready to build:
+  - `S1-file-stock-record` – file a stock record (SKU, location, quantity, tracking code) with inline fields
+  - `S2-stock-by-location-table` – see a scannable stock-by-location table on the home view
+  - `S3-sku-detail-view` – click a row to see that record's SKU detail across its locations
+
+## How to use it – jump straight to build
+
+**Prerequisite:** Consort is installed, your environment is prepped, and access to a Lakebase
+profile is ready to go. If you haven't set that up yet, run:
 
 ```bash
 bash <(curl -sL https://tinyurl.com/consort-bootstrap)
 ```
 
-That installs the Consort plugin, pre-downloads the toolkit, and runs the environment doctor. Once it
-reports green, clone this starter:
+If you need Lakebase, you can try it on [Free Edition](https://login.databricks.com/signup?intent=SIGN_UP&provider=DB_FREE_TIER).
+
+### 1. Clone it down
 
 ```bash
-git clone https://github.com/kevin-hartman/stockflow-starter-project.git
-cd stockflow-starter-project
-git checkout staging
+git clone https://github.com/kevin-hartman/stockflow-f1-design-complete.git
+cd stockflow-f1-design-complete
+git checkout feature-f1-stock-visibility
 (cd client && npm install)
 ```
 
-Then stand it up as your own project — replace `my-stockflow` with your project name (kebab-case):
+`feature-f1-stock-visibility` is the branch carrying the F1 design state; the last line
+installs the UI client dependencies.
+
+### 2. Stand it up as *your* project
+
+Run the setup script, replacing `my-stockflow` with your own project name (kebab-case):
 
 ```bash
 ./setup.sh my-stockflow
 ```
 
-`./setup.sh` creates a fresh Lakebase project (prod + staging), re-attaches git to a new repo of
-your name, regenerates `.env` against your workspace, and **leaves you on `staging` at the plan
-gate** — no feature branch, nothing to claim. (It handles no-feature starters, single-feature, and
-parallel multi-feature snapshots alike; see
-[`RUNBOOK-rehydrate-as-new-project.md`](RUNBOOK-rehydrate-as-new-project.md) for the details and
-gotchas.)
+It creates a fresh Lakebase project, re-attaches git to a new repo of your name, regenerates
+`.env` against your workspace, and leaves you on the F1 feature branch with its paired Lakebase
+branch ready. If you hit a snag, read the [runbook](RUNBOOK-rehydrate-as-new-project.md) and
+share it with a Claude session to resolve.
 
-Then start the workflow. First, resume the project:
+### 3. Build the first feature
+
+In your Claude session, resume the workflow:
 
 ```
 /consort:start
 ```
 
-It picks up where the starter leaves off and is **waiting for your approval** at the plan gate. Once
-you approve, begin building — either one feature at a time:
+F1's design is approved, so `/consort:start` picks up at the **build** lane. Then build it:
 
 ```
-/design F1-stock-visibility
+/build F1-stock-visibility
 ```
 
-or the whole sprint at once:
-
-```
-/sprint
-```
-
-`F1-stock-visibility` is the foundation feature (record + view stock by SKU and location) and the
-natural place to start; `/design` reads its `feature-request.md` and never overwrites it.
+It runs the Driver/Navigator TDD loop (RED → GREEN → REFACTOR) against F1's Lakebase branch —
+each cycle writes a failing test, greens it, and refactors, against a real database.

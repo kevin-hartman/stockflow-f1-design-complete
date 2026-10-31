@@ -1,0 +1,23 @@
+{
+  "id": "AC2-detail-untracked-fields-show-not-tracked",
+  "given": "a record (SKU-200, A-01, qty 5) filed without a tracking code (stored null) and with no par level",
+  "when": "the operator opens that record's detail view",
+  "then": "the tracking-code field and the par-level field each read 'not tracked', judged independently, while SKU, location and quantity are shown; no field is blank or reads 'null' and the view renders cleanly",
+  "status": "draft",
+  "independence": {
+    "distinct_from_prior": true,
+    "rationale": "Covers null optional-field rendering on the detail view; AC1 passes with a fully-populated record while a broken null rendering on the detail view (blank, 'null', crash) fails AC2."
+  },
+  "layer": "E2E",
+  "architectural_notes": "E2E: the server returns tracking_code null (stored NULL per S1 AC5) and par_level null (OD1) for the record, and the client detail component renders each null field as its own not-tracked pill, independently. This realizes the NFR9 detail clause (R9). Playwright against the live API asserts both pills, the SKU/location/quantity values, and that no field is blank or 'null'.",
+  "ui_seams": [
+    "sku-detail",
+    "detail-sku",
+    "detail-location",
+    "detail-quantity",
+    "detail-tracking-code",
+    "detail-par-level",
+    "detail-not-tracked"
+  ],
+  "api_contract_id": "EP3-get-stock-record"
+}

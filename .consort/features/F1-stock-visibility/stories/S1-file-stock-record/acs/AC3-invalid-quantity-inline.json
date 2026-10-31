@@ -1,0 +1,20 @@
+{
+  "id": "AC3-invalid-quantity-inline",
+  "given": "the stock-filing form is open with SKU and location filled",
+  "when": "the operator submits a quantity that is not a non-negative whole number (e.g. -3 or 2.5 or 'abc')",
+  "then": "an inline error naming the quantity field and stating the rule is shown next to it, and no record is created",
+  "status": "draft",
+  "independence": {
+    "distinct_from_prior": true,
+    "rationale": "Covers a present-but-invalid value, distinct from AC2's blank-field case; quantity range validation can break independently of required-field checks."
+  },
+  "layer": "E2E",
+  "architectural_notes": "E2E: the service enforces that quantity is a non-negative whole number (R2/R7), and the PI5 CHECK constraint backs it up. The client renders the server's quantity error, which states the rule, inline next to the quantity field. Tests cover -3, 2.5 and 'abc' against the live API and confirm no row is stored.",
+  "ui_seams": [
+    "stock-record-form",
+    "stock-record-quantity",
+    "stock-record-submit",
+    "stock-record-quantity-error"
+  ],
+  "api_contract_id": "EP1-file-stock-record"
+}

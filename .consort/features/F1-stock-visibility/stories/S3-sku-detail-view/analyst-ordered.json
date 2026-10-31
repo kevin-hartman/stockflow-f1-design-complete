@@ -1,0 +1,132 @@
+{
+  "items": [
+    {
+      "id": "T54",
+      "description": "GET /api/stock-records/lookup for an existing (sku, location) pair responds 200 with Content-Type application/json, never text/html (NFR5 SPA JSON boundary)",
+      "ac_id": "AC1-row-opens-detail",
+      "status": "pending",
+      "kind": "fitness",
+      "nfr_id": "NFR5-spa-json-boundary"
+    },
+    {
+      "id": "T65",
+      "description": "GET /api/stock-records/lookup for an unknown (sku, location) pair responds 404 with Content-Type application/json, never an HTML error page (NFR5 SPA JSON boundary)",
+      "ac_id": "AC3-unknown-record-not-found",
+      "status": "pending",
+      "kind": "fitness",
+      "nfr_id": "NFR5-spa-json-boundary"
+    },
+    {
+      "id": "T55",
+      "description": "SkuDetail rendered for a seeded (uuid-suffixed SKU, A-01) record shows that record's SKU, location, quantity 12 and tracking code in the detail-sku, detail-location, detail-quantity and detail-tracking-code seams inside sku-detail, fetched from the real lookup API",
+      "ac_id": "AC1-row-opens-detail",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T56",
+      "description": "SkuDetail rendered for the A-01 record of a SKU also filed at B-02 shows the A-01 quantity and never the B-02 quantity",
+      "ac_id": "AC1-row-opens-detail",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T60",
+      "description": "SkuDetail for a record filed without a tracking code renders the detail-tracking-code field as a pill pill--not-tracked (detail-not-tracked) reading 'not tracked', not blank or 'null'",
+      "ac_id": "AC2-detail-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T61",
+      "description": "SkuDetail renders the detail-par-level field as a detail-not-tracked pill reading 'not tracked' because par level is absent",
+      "ac_id": "AC2-detail-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T62",
+      "description": "SkuDetail for a record with a present tracking code but absent par level renders the tracking code value and a not-tracked pill only on par level, judged independently",
+      "ac_id": "AC2-detail-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T66",
+      "description": "SkuDetail for an unknown (sku, location) renders the detail-not-found empty-state naming the SKU at the location, parsed from the real 404 response",
+      "ac_id": "AC3-unknown-record-not-found",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T67",
+      "description": "SkuDetail not-found state renders a detail-not-found-back link to / and no sku-detail field values",
+      "ac_id": "AC3-unknown-record-not-found",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T57",
+      "description": "Playwright e2e on the deployed app at route / (real DB, per-run crypto.randomUUID()-suffixed SKU filed at A-01 and B-02): clicking the stock-row for the A-01 record navigates in-app to /sku/<sku>?location=A-01 with no full-page reload and the sku-detail seam is visible",
+      "ac_id": "AC1-row-opens-detail",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-open.spec.ts"
+    },
+    {
+      "id": "T58",
+      "description": "Playwright e2e at /sku/<sku>?location=A-01: detail-sku, detail-location, detail-quantity and detail-tracking-code show the A-01 record's SKU, A-01, 12 and A01-B7-S0042",
+      "ac_id": "AC1-row-opens-detail",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-open.spec.ts"
+    },
+    {
+      "id": "T59",
+      "description": "Playwright e2e at /sku/<sku>?location=A-01: the sku-detail view does not contain the B-02 record's quantity 7",
+      "ac_id": "AC1-row-opens-detail",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-open.spec.ts"
+    },
+    {
+      "id": "T63",
+      "description": "Playwright e2e loading /sku/<unique-sku>?location=A-01 through the real App for a record filed without tracking code: detail-tracking-code and detail-par-level each contain their own detail-not-tracked pill reading 'not tracked'",
+      "ac_id": "AC2-detail-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-untracked.spec.ts"
+    },
+    {
+      "id": "T64",
+      "description": "Playwright e2e at the untracked record's detail route: detail-sku, detail-location and detail-quantity show the unique SKU, A-01 and 5, and no field is blank or reads 'null'",
+      "ac_id": "AC2-detail-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-untracked.spec.ts"
+    },
+    {
+      "id": "T68",
+      "description": "Playwright e2e opening /sku/<unique-absent-sku>?location=Z-99 directly in the real App against the live API: the detail-not-found seam names the SKU at Z-99, not a blank page, empty detail or generic error",
+      "ac_id": "AC3-unknown-record-not-found",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-not-found.spec.ts"
+    },
+    {
+      "id": "T69",
+      "description": "Playwright e2e on the not-found detail route: activating detail-not-found-back navigates in-app to / and shows the stock table page",
+      "ac_id": "AC3-unknown-record-not-found",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-not-found.spec.ts"
+    }
+  ]
+}

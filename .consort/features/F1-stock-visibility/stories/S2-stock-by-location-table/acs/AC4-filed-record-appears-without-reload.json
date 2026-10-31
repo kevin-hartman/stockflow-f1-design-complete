@@ -1,0 +1,24 @@
+{
+  "id": "AC4-filed-record-appears-without-reload",
+  "given": "the home table shows existing stock and no record exists for (SKU-300, C-03)",
+  "when": "the operator files a record for (SKU-300, C-03, qty 4) through the form and returns to the home view within the app",
+  "then": "the new (SKU-300, C-03) row appears in the table with quantity 4, reached by in-app navigation with no full-page reload",
+  "status": "draft",
+  "independence": {
+    "distinct_from_prior": true,
+    "rationale": "Covers freshness of the table after a write inside the single-page app (R5); AC1 reads pre-seeded data on first load, so a stale client-side table fails AC4 while AC1 stays green."
+  },
+  "layer": "E2E",
+  "architectural_notes": "E2E client-server round trip across EP1 then EP2: the form posts asynchronously, and SPA navigation back to / remounts the home route, whose useStockRecords hook re-fetches EP2 (no client-side stale cache, R5). Playwright files (SKU-300, C-03, 4) via the live API and asserts the new row appears with no full-page navigation event.",
+  "ui_seams": [
+    "stock-record-form",
+    "stock-record-sku",
+    "stock-record-location",
+    "stock-record-quantity",
+    "stock-record-submit",
+    "stock-table",
+    "stock-row",
+    "stock-cell-quantity"
+  ],
+  "api_contract_id": "EP2-list-stock-records"
+}

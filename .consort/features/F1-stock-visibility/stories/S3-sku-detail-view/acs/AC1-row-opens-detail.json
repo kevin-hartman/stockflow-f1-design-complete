@@ -1,0 +1,18 @@
+{
+  "id": "AC1-row-opens-detail",
+  "given": "the home table lists records (SKU-100, A-01, qty 12, tracking code A01-B7-S0042) and (SKU-100, B-02, qty 7)",
+  "when": "the operator selects the (SKU-100, A-01) row",
+  "then": "a detail view for exactly that record opens by in-app navigation with no full-page reload, showing SKU-100, location A-01, quantity 12 and tracking code A01-B7-S0042, and not the values of the (SKU-100, B-02) record",
+  "status": "draft",
+  "layer": "E2E",
+  "architectural_notes": "E2E: the home stock-row is a SPA link to /sku/:sku?location=, and the React detail page fetches EP3 for exactly that (sku, location) pair with no full-page reload. app/routes delegates to app/services/stock_record_service.get_record, which calls app/repositories/stock_record_repository.get_by_key (equality on the PI1 unique pair, so no other record's values can leak). Playwright seeds both SKU-100 rows on the paired branch and asserts the A-01 values only.",
+  "ui_seams": [
+    "stock-row",
+    "sku-detail",
+    "detail-sku",
+    "detail-location",
+    "detail-quantity",
+    "detail-tracking-code"
+  ],
+  "api_contract_id": "EP3-get-stock-record"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "AC2-missing-required-field-inline",
+  "given": "the stock-filing form is open",
+  "when": "the operator submits with a required field (SKU, location, or quantity) left blank",
+  "then": "an inline error naming that field is shown next to it (never a generic 'bad request'), the entered values are kept, and no record is created",
+  "status": "draft",
+  "independence": {
+    "distinct_from_prior": true,
+    "rationale": "Covers the incomplete-submission path; AC1 covers only a valid submission, so a broken required-field check fails AC2 while AC1 stays green."
+  },
+  "layer": "E2E",
+  "architectural_notes": "E2E: the required-field rule is decided by the server, and the client renders the real 422 errors[] next to each named field. Required-field validation belongs to the service layer, with request parsing at the boundary; the client maps errors by field and keeps the entered values. A real Playwright test against the live API asserts the field-named inline error and that no stock_records row was created.",
+  "ui_seams": [
+    "stock-record-form",
+    "stock-record-sku",
+    "stock-record-location",
+    "stock-record-quantity",
+    "stock-record-submit",
+    "stock-record-sku-error",
+    "stock-record-location-error",
+    "stock-record-quantity-error"
+  ],
+  "api_contract_id": "EP1-file-stock-record"
+}

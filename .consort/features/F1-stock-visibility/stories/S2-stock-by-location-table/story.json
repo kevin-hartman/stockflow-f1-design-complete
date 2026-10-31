@@ -1,0 +1,11 @@
+{
+  "id": "S2-stock-by-location-table",
+  "asA": "warehouse operator",
+  "iWantTo": "see all stock in a home table by location, with explicit not-tracked fields and an empty state",
+  "soThat": "I can scan current stock",
+  "requires_e2e": true,
+  "independence": {
+    "distinct_from_prior": true,
+    "rationale": "Adds the home table read view and empty state; S1 only files records via the form."
+  }
+}

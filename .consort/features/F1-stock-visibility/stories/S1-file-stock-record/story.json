@@ -1,0 +1,7 @@
+{
+  "id": "S1-file-stock-record",
+  "asA": "warehouse operator",
+  "iWantTo": "file a stock record (SKU, location, quantity, tracking code) with inline field-named validation and one record per (sku, location)",
+  "soThat": "the team knows what we hold",
+  "requires_e2e": true
+}

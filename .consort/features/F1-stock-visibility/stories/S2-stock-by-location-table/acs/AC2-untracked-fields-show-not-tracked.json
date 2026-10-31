@@ -1,0 +1,20 @@
+{
+  "id": "AC2-untracked-fields-show-not-tracked",
+  "given": "a record (SKU-100, A-01) filed with a tracking code and a record (SKU-200, A-01) filed without one (tracking code null), and no par level filed for either",
+  "when": "the operator opens the home view",
+  "then": "each optional field is judged independently per row: SKU-200's tracking-code cell reads 'not tracked' while SKU-100's shows its code, and the par-level cell reads 'not tracked' on both rows; no cell is blank and the row still renders cleanly",
+  "status": "draft",
+  "independence": {
+    "distinct_from_prior": true,
+    "rationale": "Covers rendering of absent optional fields; AC1 can pass with only fully-populated rows while a broken null rendering (blank cell, 'null', crash) fails AC2."
+  },
+  "layer": "E2E",
+  "architectural_notes": "E2E: the server returns tracking_code null for the untracked row and par_level null for all rows (OD1); the client stock-table component renders each null field as its own not-tracked pill per row, independently. Realizes NFR9's rendering clause (R9). Playwright against the live API asserts the per-cell pill vs code and that no cell is blank or 'null'.",
+  "ui_seams": [
+    "stock-row",
+    "stock-cell-tracking-code",
+    "stock-cell-par-level",
+    "not-tracked"
+  ],
+  "api_contract_id": "EP2-list-stock-records"
+}

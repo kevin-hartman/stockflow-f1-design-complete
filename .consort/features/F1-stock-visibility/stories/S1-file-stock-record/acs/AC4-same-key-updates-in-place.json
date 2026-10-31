@@ -1,0 +1,14 @@
+{
+  "id": "AC4-same-key-updates-in-place",
+  "given": "a stock record exists for (SKU-100, A-01) with quantity 12",
+  "when": "the operator files a record for the same SKU-100 at A-01 with quantity 20",
+  "then": "the existing record is updated in place to quantity 20, exactly one record exists for (SKU-100, A-01), and no duplicate is created",
+  "status": "draft",
+  "independence": {
+    "distinct_from_prior": true,
+    "rationale": "Write-collision on the (sku, location) key R3; independently breakable from AC1's first write."
+  },
+  "layer": "API",
+  "architectural_notes": "API: this is the backend write rule for an R3 collision. app/services/stock_record_service calls an upsert in app/repositories/stock_record_repository (INSERT ... ON CONFLICT (sku, location) DO UPDATE), relying on PI1's unique constraint. The upsert returns 200 with created=false. A pytest-bdd test on the paired branch asserts quantity 20 and exactly one row.",
+  "api_contract_id": "EP1-file-stock-record"
+}

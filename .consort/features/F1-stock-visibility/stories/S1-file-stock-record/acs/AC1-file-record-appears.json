@@ -1,0 +1,19 @@
+{
+  "id": "AC1-file-record-appears",
+  "given": "the stock-filing form is open and no record exists for SKU 'SKU-100' at location 'A-01'",
+  "when": "the operator enters SKU 'SKU-100', location 'A-01', quantity 12 and a tracking code, and submits the form",
+  "then": "the submission succeeds without a full-page reload, the operator sees confirmation, and a stock record for (SKU-100, A-01) with quantity 12 and that tracking code exists",
+  "status": "draft",
+  "layer": "E2E",
+  "architectural_notes": "E2E client-server round trip: the React /stock/new form posts asynchronously to the app/routes stock-records endpoint and renders the success status from the real response, with no page reload. The boundary hands off to app/services/stock_record_service, which validates and calls app/repositories/stock_record_repository to persist an app/models/stock_record row in the paired branch DB. The tests assert the success region and the stored (SKU-100, A-01, 12, tracking code) row.",
+  "ui_seams": [
+    "stock-record-form",
+    "stock-record-sku",
+    "stock-record-location",
+    "stock-record-quantity",
+    "stock-record-tracking-code",
+    "stock-record-submit",
+    "stock-record-success"
+  ],
+  "api_contract_id": "EP1-file-stock-record"
+}

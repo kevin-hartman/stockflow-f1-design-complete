@@ -1,0 +1,82 @@
+[
+ {
+  "id": "cli-1",
+  "description": "Playwright e2e (client/tests/e2e/file-stock-record.spec.ts) navigates the deployed app to /stock/new, fills the stock-record-form with a crypto.randomUUID()-suffixed SKU, location A-01, quantity 12 and a tracking code, submits, and sees the stock-record-success status without a full-page reload against the live DB",
+  "ac_id": "AC1-file-record-appears",
+  "status": "pending",
+  "kind": "client",
+  "scenario_file": "client/tests/e2e/file-stock-record.spec.ts"
+ },
+ {
+  "id": "cli-2",
+  "description": "Playwright e2e (client/tests/e2e/file-stock-record.spec.ts) after filing the unique-SKU record at /stock/new reads back the stored row from the live API with quantity 12 and the entered tracking code",
+  "ac_id": "AC1-file-record-appears",
+  "status": "pending",
+  "kind": "client",
+  "scenario_file": "client/tests/e2e/file-stock-record.spec.ts"
+ },
+ {
+  "id": "cli-3",
+  "description": "Playwright e2e (client/tests/e2e/file-stock-record-required-field.spec.ts) at /stock/new submits with the SKU blank and sees the stock-record-sku-error field-named inline error next to the SKU input, with entered values kept",
+  "ac_id": "AC2-missing-required-field-inline",
+  "status": "pending",
+  "kind": "client",
+  "scenario_file": "client/tests/e2e/file-stock-record-required-field.spec.ts"
+ },
+ {
+  "id": "cli-4",
+  "description": "Playwright e2e (client/tests/e2e/file-stock-record-required-field.spec.ts) at /stock/new submits with the location blank and sees the stock-record-location-error inline error next to the location input",
+  "ac_id": "AC2-missing-required-field-inline",
+  "status": "pending",
+  "kind": "client",
+  "scenario_file": "client/tests/e2e/file-stock-record-required-field.spec.ts"
+ },
+ {
+  "id": "cli-5",
+  "description": "Playwright e2e (client/tests/e2e/file-stock-record-required-field.spec.ts) at /stock/new submits with the quantity blank and sees the stock-record-quantity-error inline error next to the quantity input",
+  "ac_id": "AC2-missing-required-field-inline",
+  "status": "pending",
+  "kind": "client",
+  "scenario_file": "client/tests/e2e/file-stock-record-required-field.spec.ts"
+ },
+ {
+  "id": "cli-6",
+  "description": "Playwright e2e (client/tests/e2e/file-stock-record-required-field.spec.ts) confirms that after a blank-field submission no stock record exists for the per-run crypto.randomUUID()-suffixed SKU in the live DB",
+  "ac_id": "AC2-missing-required-field-inline",
+  "status": "pending",
+  "kind": "client",
+  "scenario_file": "client/tests/e2e/file-stock-record-required-field.spec.ts"
+ },
+ {
+  "id": "cli-7",
+  "description": "Playwright e2e (client/tests/e2e/file-stock-record-invalid-quantity.spec.ts) at /stock/new submits quantity -3 with a crypto.randomUUID()-suffixed SKU and sees the stock-record-quantity-error stating the non-negative whole number rule",
+  "ac_id": "AC3-invalid-quantity-inline",
+  "status": "pending",
+  "kind": "client",
+  "scenario_file": "client/tests/e2e/file-stock-record-invalid-quantity.spec.ts"
+ },
+ {
+  "id": "cli-8",
+  "description": "Playwright e2e (client/tests/e2e/file-stock-record-invalid-quantity.spec.ts) at /stock/new submits quantity 2.5 and sees the stock-record-quantity-error inline next to the quantity input",
+  "ac_id": "AC3-invalid-quantity-inline",
+  "status": "pending",
+  "kind": "client",
+  "scenario_file": "client/tests/e2e/file-stock-record-invalid-quantity.spec.ts"
+ },
+ {
+  "id": "cli-9",
+  "description": "Playwright e2e (client/tests/e2e/file-stock-record-invalid-quantity.spec.ts) at /stock/new submits quantity 'abc' and sees the stock-record-quantity-error inline next to the quantity input",
+  "ac_id": "AC3-invalid-quantity-inline",
+  "status": "pending",
+  "kind": "client",
+  "scenario_file": "client/tests/e2e/file-stock-record-invalid-quantity.spec.ts"
+ },
+ {
+  "id": "cli-10",
+  "description": "Playwright e2e (client/tests/e2e/file-stock-record-invalid-quantity.spec.ts) confirms that after an invalid-quantity submission no stock record exists for the per-run unique SKU in the live DB",
+  "ac_id": "AC3-invalid-quantity-inline",
+  "status": "pending",
+  "kind": "client",
+  "scenario_file": "client/tests/e2e/file-stock-record-invalid-quantity.spec.ts"
+ }
+]

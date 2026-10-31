@@ -1,0 +1,140 @@
+{
+  "items": [
+    {
+      "id": "T36",
+      "description": "Migration SC2-add-location-sku-index is reversible: downgrading to its own down_revision (the explicit revision id, not a relative step) then upgrade head recreates index ix_stock_records_location_sku on stock_records (location, sku) on the real branch database, with the table and its columns/constraints still present (marked @pytest.mark.migration)",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "fitness",
+      "schema_change_id": "SC2-add-location-sku-index"
+    },
+    {
+      "id": "T51",
+      "description": "Rows in stock_records seeded with a per-run-unique SKU before the SC2 index migration is downgraded to its own down_revision and upgraded to head still exist afterwards with identical sku, location and quantity values (scoped to the test's own rows)",
+      "ac_id": "AC5-zero-quantity-record-listed",
+      "status": "pending",
+      "kind": "fitness",
+      "schema_change_id": "SC2-add-location-sku-index"
+    },
+    {
+      "id": "T37",
+      "description": "GET /api/stock-records responds with Content-Type application/json (never text/html) and a bare JSON array body",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "fitness",
+      "nfr_id": "NFR5-spa-json-boundary"
+    },
+    {
+      "id": "T38",
+      "description": "The database engine serving the list endpoint takes its connection URL from the DATABASE_URL environment variable, with no hardcoded connection string in app/database.py",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "fitness"
+    },
+    {
+      "id": "T39",
+      "description": "StockTable rendered alone against the real EP2 list renders exactly one stock-row per filed record with its stock-cell-sku, stock-cell-location, stock-cell-quantity and stock-cell-tracking-code text",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockTable.test.tsx"
+    },
+    {
+      "id": "T40",
+      "description": "StockTable renders all A-01 rows together before B-02 rows under a location-group header per location, in the real server order",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockTable.test.tsx"
+    },
+    {
+      "id": "T43",
+      "description": "StockTable renders a not-tracked pill in stock-cell-tracking-code only for the row whose real tracking_code is null while the other row shows its code",
+      "ac_id": "AC2-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockTable.test.tsx"
+    },
+    {
+      "id": "T44",
+      "description": "StockTable renders a not-tracked pill in stock-cell-par-level on every row and leaves no cell blank or reading 'null'",
+      "ac_id": "AC2-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockTable.test.tsx"
+    },
+    {
+      "id": "T52",
+      "description": "StockTable renders a stock-row with stock-cell-quantity text 0 for a real quantity-0 record, neither hidden nor blank",
+      "ac_id": "AC5-zero-quantity-record-listed",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockTable.test.tsx"
+    },
+    {
+      "id": "T47",
+      "description": "The stock list component renders the empty-state with its empty-state-cta to /stock/new and no stock-table when the real EP2 list is empty",
+      "ac_id": "AC3-empty-state-when-no-stock",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockList.test.tsx"
+    },
+    {
+      "id": "T49",
+      "description": "The stock list component re-fetches the real EP2 list when remounted and shows a stock-row with quantity 4 for a record filed via the real API under a crypto.randomUUID-suffixed sku",
+      "ac_id": "AC4-filed-record-appears-without-reload",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockList.test.tsx"
+    },
+    {
+      "id": "T41",
+      "description": "Opening the real app at route / in a browser against the live DB renders the stock-table with exactly one stock-row per seeded record, each row showing its SKU, location, quantity and tracking code cells (data-testid stock-cell-sku, stock-cell-location, stock-cell-quantity, stock-cell-tracking-code), using per-run-unique SKUs",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "client"
+    },
+    {
+      "id": "T42",
+      "description": "At route / in the browser, rows seeded for location A-01 render grouped together before the B-02 row, under a location-group header per location (data-testid location-group)",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "client"
+    },
+    {
+      "id": "T45",
+      "description": "At route / in the browser against the live DB, a row filed without a tracking code shows the not-tracked pill (data-testid not-tracked) in its stock-cell-tracking-code while the row filed with a code shows that code",
+      "ac_id": "AC2-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "client"
+    },
+    {
+      "id": "T46",
+      "description": "At route / in the browser, the stock-cell-par-level of every seeded row shows the not-tracked pill and no cell is blank or reads 'null'",
+      "ac_id": "AC2-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "client"
+    },
+    {
+      "id": "T53",
+      "description": "At route / in the browser against the live DB, a seeded quantity-0 record is listed as a stock-row whose stock-cell-quantity reads 0 (not hidden, not blank)",
+      "ac_id": "AC5-zero-quantity-record-listed",
+      "status": "pending",
+      "kind": "client"
+    },
+    {
+      "id": "T48",
+      "description": "At route / in the browser with no stock records on the live DB, the empty-state is shown with its empty-state-cta linking to /stock/new, and no stock-table or table header is rendered",
+      "ac_id": "AC3-empty-state-when-no-stock",
+      "status": "pending",
+      "kind": "client"
+    },
+    {
+      "id": "T50",
+      "description": "In the browser, filing a record with a crypto.randomUUID()-suffixed SKU at /stock/new through the form and returning to / via the navbar Stock link (SPA navigation, no full-page navigation event) shows the new stock-row with its stock-cell-quantity 4",
+      "ac_id": "AC4-filed-record-appears-without-reload",
+      "status": "pending",
+      "kind": "client"
+    }
+  ]
+}

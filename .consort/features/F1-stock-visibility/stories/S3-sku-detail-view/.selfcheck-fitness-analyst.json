@@ -1,0 +1,4 @@
+[
+  {"id":"fit-1","description":"GET /api/stock-records/lookup for an existing (sku, location) pair responds 200 with Content-Type application/json, never text/html (NFR5 SPA JSON boundary)","ac_id":"AC1-row-opens-detail","status":"pending","kind":"fitness","nfr_id":"NFR5-spa-json-boundary"},
+  {"id":"fit-2","description":"GET /api/stock-records/lookup for an unknown (sku, location) pair responds 404 with Content-Type application/json, never an HTML error page (NFR5 SPA JSON boundary)","ac_id":"AC3-unknown-record-not-found","status":"pending","kind":"fitness","nfr_id":"NFR5-spa-json-boundary"}
+]

@@ -1,0 +1,14 @@
+{
+  "id": "AC5-optional-tracking-code-omitted",
+  "given": "the stock-filing form is open",
+  "when": "the operator submits a valid SKU, location and quantity with the tracking code left empty",
+  "then": "the submission is accepted and the record is stored with no tracking code (null), so downstream views can show it as 'not tracked'",
+  "status": "draft",
+  "independence": {
+    "distinct_from_prior": true,
+    "rationale": "Produces the null tracking-code state that S2/S3 render as 'not tracked'; AC1 only files a record with a tracking code."
+  },
+  "layer": "API",
+  "architectural_notes": "API: the service turns a blank or absent tracking_code into NULL before the repository writes it, and stock_records.tracking_code stays nullable (no not_null invariant). A pytest-bdd test on the paired branch asserts the request is accepted and the stored tracking_code IS NULL, never an empty string. This is the null state that S2/S3 render as 'not tracked' (R9).",
+  "api_contract_id": "EP1-file-stock-record"
+}

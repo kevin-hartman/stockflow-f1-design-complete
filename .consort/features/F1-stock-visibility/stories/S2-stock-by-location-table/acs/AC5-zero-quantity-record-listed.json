@@ -1,0 +1,18 @@
+{
+  "id": "AC5-zero-quantity-record-listed",
+  "given": "a record exists for (SKU-400, A-01) with quantity 0",
+  "when": "the operator opens the home view",
+  "then": "the (SKU-400, A-01) row is listed with quantity shown as 0, per the feature data semantic that a quantity-0 record is a valid filed record",
+  "status": "draft",
+  "independence": {
+    "distinct_from_prior": true,
+    "rationale": "Pins the feature-level quantity-0 semantic in the table; a 'quantity > 0' filter would fail AC5 while AC1-AC4 stay green."
+  },
+  "layer": "E2E",
+  "architectural_notes": "E2E: the repository listing applies no quantity filter, so a quantity-0 row (valid under PI5 CHECK >= 0) is returned by EP2 and the client renders 0 rather than hiding the row or treating 0 as falsy/blank. Playwright seeds (SKU-400, A-01, 0) on the paired branch and asserts the row with quantity 0.",
+  "ui_seams": [
+    "stock-row",
+    "stock-cell-quantity"
+  ],
+  "api_contract_id": "EP2-list-stock-records"
+}

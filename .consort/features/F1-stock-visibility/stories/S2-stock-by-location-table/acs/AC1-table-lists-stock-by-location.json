@@ -1,0 +1,19 @@
+{
+  "id": "AC1-table-lists-stock-by-location",
+  "given": "stock records exist for (SKU-100, A-01, qty 12), (SKU-200, A-01, qty 5) and (SKU-100, B-02, qty 7)",
+  "when": "the operator opens the home view",
+  "then": "a stock-by-location table shows exactly one row per record, each with its SKU, location, quantity and tracking code, ordered by location so all A-01 rows appear together before B-02",
+  "status": "draft",
+  "layer": "E2E",
+  "architectural_notes": "E2E: the React home view fetches the real EP2 list on mount and renders one stock-row per record in server order. app/routes delegates to app/services/stock_record_service.list_records, which calls app/repositories/stock_record_repository.list_ordered (ORDER BY location, sku; AP1). Playwright seeds three rows on the paired branch and asserts row count, cell values and A-01 rows grouped before B-02.",
+  "ui_seams": [
+    "stock-table",
+    "stock-row",
+    "location-group",
+    "stock-cell-sku",
+    "stock-cell-location",
+    "stock-cell-quantity",
+    "stock-cell-tracking-code"
+  ],
+  "api_contract_id": "EP2-list-stock-records"
+}

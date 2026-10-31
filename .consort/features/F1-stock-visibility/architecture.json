@@ -1,0 +1,301 @@
+{
+  "feature_id": "F1-stock-visibility",
+  "service_backed": true,
+  "layers": [
+    {
+      "name": "routes",
+      "role": "boundary",
+      "module": "app/routes",
+      "renders_via": "react",
+      "may_import": [
+        "service"
+      ]
+    },
+    {
+      "name": "services",
+      "role": "service",
+      "module": "app/services",
+      "may_import": [
+        "repository",
+        "models"
+      ]
+    },
+    {
+      "name": "repositories",
+      "role": "repository",
+      "module": "app/repositories",
+      "may_import": [
+        "models",
+        "infrastructure"
+      ]
+    },
+    {
+      "name": "models",
+      "role": "models",
+      "module": "app/models/",
+      "may_import": [
+        "infrastructure"
+      ]
+    },
+    {
+      "name": "database",
+      "role": "infrastructure",
+      "module": "app/database.py",
+      "may_import": []
+    }
+  ],
+  "persistence_invariants": [
+    {
+      "id": "PI1-unique-sku-location",
+      "type": "unique",
+      "table": "stock_records",
+      "brief": "A composite UNIQUE constraint on (sku, location) rejects a second row for the same pair; the upsert resolves a collision by updating the existing row in place."
+    },
+    {
+      "id": "PI2-sku-not-null",
+      "type": "not_null",
+      "table": "stock_records",
+      "brief": "stock_records.sku is NOT NULL; inserting a row with a null sku is rejected by the database."
+    },
+    {
+      "id": "PI3-location-not-null",
+      "type": "not_null",
+      "table": "stock_records",
+      "brief": "stock_records.location is NOT NULL; inserting a row with a null location is rejected by the database."
+    },
+    {
+      "id": "PI4-quantity-not-null",
+      "type": "not_null",
+      "table": "stock_records",
+      "brief": "stock_records.quantity is NOT NULL; inserting a row with a null quantity is rejected by the database."
+    },
+    {
+      "id": "PI5-quantity-non-negative",
+      "type": "check",
+      "table": "stock_records",
+      "brief": "A CHECK (quantity >= 0) on stock_records rejects a negative quantity at the database even if the service check is bypassed."
+    },
+    {
+      "id": "PI6-create-table-reversible",
+      "type": "migration_reversible",
+      "table": "stock_records",
+      "brief": "After downgrading the initial create_table migration to its own down_revision and running upgrade head, stock_records is recreated with its columns, the (sku, location) unique constraint, NOT NULLs and the quantity CHECK (schema recreated; no data-survival claim for an initial create_table). tracking_code remains nullable."
+    }
+  ],
+  "access_patterns": [
+    {
+      "id": "AP1-list-ordered-by-location",
+      "table": "stock_records",
+      "columns": [
+        "location",
+        "sku"
+      ],
+      "story": "S2-stock-by-location-table",
+      "brief": "Full listing of stock_records ORDER BY location, sku for the home table; the (sku, location) unique index leads with sku, so a (location, sku) ordering is a new index candidate."
+    }
+  ],
+  "api_contracts": [
+    {
+      "id": "EP1-file-stock-record",
+      "method": "POST",
+      "path": "/api/stock-records",
+      "shape": "object",
+      "item": "Request body {sku: string, location: string, quantity: integer >= 0, tracking_code: string|null (blank -> null)}. 201 on create / 200 on update-in-place, body {id: int, sku: string, location: string, quantity: int, tracking_code: string|null, created: boolean}. 422 on validation failure, body {errors: [{field: 'sku'|'location'|'quantity', message: string}]} naming each offending field; nothing is persisted on 422.",
+      "story": "S1-file-stock-record"
+    },
+    {
+      "id": "EP2-list-stock-records",
+      "method": "GET",
+      "path": "/api/stock-records",
+      "shape": "list",
+      "item": "Bare JSON array (no envelope), ordered by location ASC then sku ASC; [] when no records. Each item {id: int, sku: string, location: string, quantity: int >= 0 (0 is a valid listed value), tracking_code: string|null, batch: null, serial: null, par_level: null} (batch/serial/par_level always null in F1 per OD1).",
+      "story": "S2-stock-by-location-table"
+    },
+    {
+      "id": "EP3-get-stock-record",
+      "method": "GET",
+      "path": "/api/stock-records/lookup",
+      "query": [
+        "sku",
+        "location"
+      ],
+      "shape": "object",
+      "item": "200 body: the single record matching the exact (sku, location) pair {id: int, sku: string, location: string, quantity: int >= 0, tracking_code: string|null, batch: null, serial: null, par_level: null} (batch/serial/par_level always null in F1 per OD1). 404 when no record matches, body {error: 'not_found', sku: string, location: string} echoing the requested pair. Lookup served by the PI1 (sku, location) unique index.",
+      "story": "S3-sku-detail-view"
+    }
+  ],
+  "nfrs": [
+    {
+      "id": "NFR1-data-survival-audit",
+      "brief_ref": "R1",
+      "tier": "product",
+      "category": "data-integrity",
+      "applies_to": "S1-file-stock-record",
+      "fitness_function": "Downgrade the stock_records create_table migration to its down_revision, upgrade head, and assert the table, unique constraint, NOT NULLs and quantity CHECK are present again on the paired branch.",
+      "hil_status": "accepted",
+      "requirement": "Schema migrations never lose stock data. F1's migration is the initial create_table, so the obligation here is reversibility (schema recreated) and nullable-optional columns; the immutable timestamp+actor audit applies to inventory adjustments (receive/pick/adjust/count) introduced by later features, not to F1 record filing (see OD2)."
+    },
+    {
+      "id": "NFR2-never-negative",
+      "brief_ref": "R2",
+      "tier": "product",
+      "category": "correctness",
+      "applies_to": "S1-file-stock-record",
+      "fitness_functions": [
+        {
+          "clause": "A filed quantity below zero is rejected at write time with a field-named quantity error and nothing is stored.",
+          "realized_by": [
+            "AC3-invalid-quantity-inline"
+          ]
+        }
+      ],
+      "hil_status": "accepted",
+      "requirement": "Quantity is a non-negative whole number, enforced in the service and by PI5 CHECK. Overcommit (pick/allocation) is N/A in F1: no pick operation exists in this feature.",
+      "fitness_function": "pytest-bdd on the paired branch: POST quantity -3 returns 422 naming quantity and stock_records has no row; a direct INSERT with quantity -1 is rejected by the quantity CHECK."
+    },
+    {
+      "id": "NFR3-unique-addressability",
+      "brief_ref": "R3",
+      "tier": "product",
+      "category": "data-integrity",
+      "applies_to": "S1-file-stock-record",
+      "fitness_functions": [
+        {
+          "clause": "Filing an existing (sku, location) updates its quantity in place; exactly one row exists for the pair afterwards and the response is a success, never an error page.",
+          "realized_by": [
+            "AC4-same-key-updates-in-place"
+          ]
+        }
+      ],
+      "hil_status": "accepted",
+      "requirement": "Collision resolved at write time via INSERT ... ON CONFLICT (sku, location) DO UPDATE in the repository; location stored verbatim as the canonical key.",
+      "fitness_function": "pytest-bdd on the paired branch: file (SKU-100, A-01) qty 12 then qty 20; assert a success response, quantity 20 and COUNT(*)=1 for the pair."
+    },
+    {
+      "id": "NFR4-real-branch-tests",
+      "brief_ref": "R4",
+      "tier": "platform",
+      "category": "operability",
+      "applies_to": "F1-stock-visibility",
+      "defended_by_gate": "consort-real-branch-tests",
+      "hil_status": "accepted",
+      "requirement": "All integration tests (pytest-bdd + Playwright e2e) run against the paired Lakebase branch DATABASE_URL; no mock/in-memory DB. Defended by the CI/kit real-branch gate.",
+      "fitness_function": "Feature-level check: the test conftest resolves DATABASE_URL to the paired Lakebase branch and fails fast if it is unset or points at sqlite/in-memory."
+    },
+    {
+      "id": "NFR5-spa-json-boundary",
+      "brief_ref": "R5",
+      "tier": "platform",
+      "category": "layering",
+      "applies_to": "F1-stock-visibility",
+      "defended_by_gate": "consort-layering-clean",
+      "hil_status": "accepted",
+      "requirement": "React + TypeScript SPA under client/; the app/routes boundary returns JSON only (renders_via react). Form submit is async fetch, no full-page reload.",
+      "fitness_function": "Feature-level check: POST /api/stock-records responds with Content-Type application/json (never text/html), and the Playwright filing flow completes without a full-page navigation event."
+    },
+    {
+      "id": "NFR6-scan-response",
+      "brief_ref": "R6",
+      "tier": "product",
+      "category": "performance",
+      "applies_to": "F1-stock-visibility",
+      "hil_status": "accepted",
+      "requirement": "N/A for F1 \u2013 no barcode-scan interaction is introduced by this feature; applies to the scan-driven receive/pick features.",
+      "fitness_function": "N/A \u2013 F1 introduces no barcode-scan interaction; the budget applies to the scan-driven receive/pick features."
+    },
+    {
+      "id": "NFR7-field-named-validation",
+      "brief_ref": "R7",
+      "tier": "product",
+      "category": "correctness",
+      "applies_to": "S1-file-stock-record",
+      "fitness_functions": [
+        {
+          "clause": "A blank required field (sku, location, quantity) yields a 422 whose errors[] names that field, rendered inline next to it, never a generic 'bad request'.",
+          "realized_by": [
+            "AC2-missing-required-field-inline"
+          ]
+        },
+        {
+          "clause": "An invalid quantity (-3, 2.5, 'abc') yields a 422 whose errors[] names quantity and states the non-negative whole number rule, rendered inline next to the quantity field.",
+          "realized_by": [
+            "AC3-invalid-quantity-inline"
+          ]
+        }
+      ],
+      "hil_status": "accepted",
+      "requirement": "Validation lives in the service (domain rules) with request parsing at the boundary; errors are field-keyed and rendered by the client via describeError()/field error map.",
+      "fitness_function": "pytest-bdd + Playwright on the paired branch: a blank sku/location/quantity and an invalid quantity each return a 422 errors[] entry naming the field, rendered inline next to that field."
+    },
+    {
+      "id": "NFR8-additive-migrations",
+      "brief_ref": "R8",
+      "tier": "platform",
+      "category": "operability",
+      "applies_to": "F1-stock-visibility",
+      "defended_by_gate": "consort-schema-diff",
+      "hil_status": "accepted",
+      "requirement": "F1 introduces stock_records via a single additive create_table; no existing table is altered. Proven by the parent-aware schema diff on the paired branch.",
+      "fitness_function": "Parent-aware schema diff on the paired branch shows only the additive create of stock_records, with no altered or dropped existing objects."
+    },
+    {
+      "id": "NFR9-graceful-rendering",
+      "brief_ref": "R9",
+      "tier": "product",
+      "category": "correctness",
+      "applies_to": "S1-file-stock-record",
+      "fitness_functions": [
+        {
+          "clause": "A record filed with a blank tracking code is stored with tracking_code NULL (never an empty string or placeholder) so downstream views render 'not tracked'.",
+          "realized_by": [
+            "AC5-optional-tracking-code-omitted"
+          ]
+        },
+        {
+          "clause": "In the home table each absent optional field (tracking_code null, par_level/batch/serial null) renders its own 'not tracked' pill per row, independently of the row's other fields; no cell is blank, 'null' or crashes the row.",
+          "realized_by": [
+            "AC2-untracked-fields-show-not-tracked"
+          ]
+        },
+        {
+          "clause": "In the record detail view each absent optional field (tracking_code null, par_level null) renders its own 'not tracked' pill independently of the other fields; no field is blank, 'null' or crashes the view.",
+          "realized_by": [
+            "AC2-detail-untracked-fields-show-not-tracked"
+          ]
+        }
+      ],
+      "hil_status": "accepted",
+      "requirement": "tracking_code is nullable; blank input normalized to null in the service (S1). S2 renders each null optional field per row as 'not tracked' in the home table. S3 renders each null optional field on the record detail view as 'not tracked'.",
+      "fitness_function": "pytest-bdd on the paired branch: POST with a blank tracking_code is accepted and the stored stock_records.tracking_code IS NULL."
+    },
+    {
+      "id": "NFR10-findability",
+      "brief_ref": "R10",
+      "tier": "product",
+      "category": "usability",
+      "applies_to": "F1-stock-visibility",
+      "hil_status": "accepted",
+      "requirement": "N/A for F1 \u2013 the read-only SKU/location search is feature F9; F1-S2 explicitly introduces no filter.",
+      "fitness_function": "N/A \u2013 the read-only SKU/location search is feature F9; F1 introduces no filter."
+    }
+  ],
+  "open_decisions": [
+    {
+      "id": "OD1-optional-columns-in-f1",
+      "question": "Does F1 persist batch, serial and par_level columns, or only tracking_code (batch/serial split is F6)?",
+      "decision_status": "resolved",
+      "resolved_by_story": "S1-file-stock-record",
+      "resolution": "F1 stock_records persists sku, location, quantity, tracking_code (nullable) only. batch/serial/par_level are not stored in F1; the API returns them as null and S2/S3 render 'not tracked'. F6 adds batch/serial additively."
+    },
+    {
+      "id": "OD-scope-batch-serial-inputs",
+      "question": "The IA names stock-record-batch / stock-record-serial form inputs on /stock/new, but no S1 AC files batch or serial and F6 owns the split \u2014 should those inputs be dropped from the F1 form?",
+      "decision_status": "open"
+    },
+    {
+      "id": "OD2-filing-audit-trail",
+      "question": "Does an update-in-place filing (AC4) count as an inventory adjustment requiring an immutable timestamp + actor (R1), given no auth in V1 and no actor field on the form?",
+      "decision_status": "deferred"
+    }
+  ]
+}

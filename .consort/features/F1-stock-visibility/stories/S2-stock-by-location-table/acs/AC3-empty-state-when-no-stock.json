@@ -1,0 +1,19 @@
+{
+  "id": "AC3-empty-state-when-no-stock",
+  "given": "no stock records exist",
+  "when": "the operator opens the home view",
+  "then": "an explicit teaching empty state is shown in place of the table (stating there is no stock yet and pointing the operator to file a stock record), never a blank page or an empty table header",
+  "status": "draft",
+  "independence": {
+    "distinct_from_prior": true,
+    "rationale": "The zero-records path; AC1/AC2 only exercise a populated table, so a missing empty state fails AC3 while they stay green."
+  },
+  "layer": "E2E",
+  "architectural_notes": "E2E: the empty state is decided by the real server response (an empty list), so the client must parse the actual EP2 body; the home page renders empty-state with a CTA to /stock/new and does not render stock-table. Playwright on a branch with stock_records cleared asserts the empty state and no table header.",
+  "ui_seams": [
+    "empty-state",
+    "empty-state-cta",
+    "stock-table"
+  ],
+  "api_contract_id": "EP2-list-stock-records"
+}

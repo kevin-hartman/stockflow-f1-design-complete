@@ -1,0 +1,18 @@
+{
+  "id": "AC3-unknown-record-not-found",
+  "given": "no stock record exists for (SKU-999, Z-99)",
+  "when": "the operator opens the detail view address for (SKU-999, Z-99) directly",
+  "then": "an explicit 'record not found' state naming SKU-999 at Z-99 is shown with a way back to the stock table, never a blank page, an empty detail view or a generic error",
+  "status": "draft",
+  "independence": {
+    "distinct_from_prior": true,
+    "rationale": "The missing-record path; AC1/AC2 only open existing records, so a blank or crashing detail view for an unknown (sku, location) fails AC3 while they stay green."
+  },
+  "layer": "E2E",
+  "architectural_notes": "E2E: not-found is decided by the server. The service returns no record, and the boundary maps that to a 404 echoing the requested sku and location. The client must parse that real response and render the detail-not-found state naming SKU-999 at Z-99 with a back link to /, never an empty detail view or a generic error. Playwright opens /sku/SKU-999?location=Z-99 directly against the live API on a branch with no such row.",
+  "ui_seams": [
+    "detail-not-found",
+    "detail-not-found-back"
+  ],
+  "api_contract_id": "EP3-get-stock-record"
+}

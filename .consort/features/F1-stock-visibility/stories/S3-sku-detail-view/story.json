@@ -1,0 +1,11 @@
+{
+  "id": "S3-sku-detail-view",
+  "asA": "warehouse operator",
+  "iWantTo": "open a single record's detail view from a table row",
+  "soThat": "I can inspect one SKU at a location",
+  "requires_e2e": true,
+  "independence": {
+    "distinct_from_prior": true,
+    "rationale": "Adds per-record detail navigation and rendering, distinct from filing and the table listing."
+  }
+}

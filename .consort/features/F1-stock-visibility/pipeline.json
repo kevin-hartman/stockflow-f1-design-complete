@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "feature_id": "F1-stock-visibility",
+  "stories": {
+    "S1-file-stock-record": {
+      "status": "ready",
+      "gate": {
+        "status": "approved",
+        "history": [
+          {
+            "action": "approved",
+            "at": "2026-10-31T22:45:07.258Z",
+            "approver": "kevin-hartman"
+          }
+        ],
+        "approver": "kevin-hartman",
+        "approved_at": "2026-10-31T22:45:07.258Z"
+      }
+    },
+    "S2-stock-by-location-table": {
+      "status": "ready",
+      "gate": {
+        "status": "approved",
+        "history": [
+          {
+            "action": "approved",
+            "at": "2026-10-31T22:45:12.754Z",
+            "approver": "kevin-hartman"
+          }
+        ],
+        "approver": "kevin-hartman",
+        "approved_at": "2026-10-31T22:45:12.754Z"
+      }
+    },
+    "S3-sku-detail-view": {
+      "status": "ready",
+      "gate": {
+        "status": "approved",
+        "history": [
+          {
+            "action": "approved",
+            "at": "2026-10-31T22:45:13.046Z",
+            "approver": "kevin-hartman"
+          }
+        ],
+        "approver": "kevin-hartman",
+        "approved_at": "2026-10-31T22:45:13.046Z"
+      }
+    }
+  },
+  "build_queue": [
+    "S1-file-stock-record",
+    "S2-stock-by-location-table",
+    "S3-sku-detail-view"
+  ],
+  "build_active": null
+}

@@ -1,0 +1,545 @@
+{
+  "feature_id": "F1-stock-visibility",
+  "ordered_for": "design-momentum",
+  "items": [
+    {
+      "id": "T1",
+      "description": "Downgrading the stock_records create_table migration to its own down_revision then upgrading head recreates stock_records with its columns, the (sku, location) unique constraint, NOT NULLs, the quantity CHECK and a nullable tracking_code on the paired branch database",
+      "ac_id": "AC1-file-record-appears",
+      "status": "pending",
+      "kind": "fitness",
+      "invariant_id": "PI6-create-table-reversible",
+      "schema_change_id": "SC1-create-stock-records",
+      "nfr_id": "NFR1-data-survival-audit"
+    },
+    {
+      "id": "T2",
+      "description": "The database connection URL is read from the DATABASE_URL environment variable and the app has no hardcoded connection string",
+      "ac_id": "AC1-file-record-appears",
+      "status": "pending",
+      "kind": "fitness"
+    },
+    {
+      "id": "T29",
+      "description": "A direct second INSERT of an existing (sku, location) pair into stock_records on the real branch database is rejected by the unique constraint",
+      "ac_id": "AC4-same-key-updates-in-place",
+      "status": "pending",
+      "kind": "fitness",
+      "invariant_id": "PI1-unique-sku-location"
+    },
+    {
+      "id": "T6",
+      "description": "A direct INSERT into stock_records on the real branch database with a null sku is rejected by the NOT NULL constraint",
+      "ac_id": "AC2-missing-required-field-inline",
+      "status": "pending",
+      "kind": "fitness",
+      "invariant_id": "PI2-sku-not-null"
+    },
+    {
+      "id": "T7",
+      "description": "A direct INSERT into stock_records on the real branch database with a null location is rejected by the NOT NULL constraint",
+      "ac_id": "AC2-missing-required-field-inline",
+      "status": "pending",
+      "kind": "fitness",
+      "invariant_id": "PI3-location-not-null"
+    },
+    {
+      "id": "T8",
+      "description": "A direct INSERT into stock_records on the real branch database with a null quantity is rejected by the NOT NULL constraint",
+      "ac_id": "AC2-missing-required-field-inline",
+      "status": "pending",
+      "kind": "fitness",
+      "invariant_id": "PI4-quantity-not-null"
+    },
+    {
+      "id": "T19",
+      "description": "A direct INSERT into stock_records on the real branch database with quantity -1 is rejected by the ck_stock_records_quantity_non_negative CHECK constraint",
+      "ac_id": "AC3-invalid-quantity-inline",
+      "status": "pending",
+      "kind": "fitness",
+      "invariant_id": "PI5-quantity-non-negative",
+      "nfr_id": "NFR2-never-negative"
+    },
+    {
+      "id": "T35",
+      "description": "A direct INSERT into stock_records on the real branch database with a null tracking_code is accepted",
+      "ac_id": "AC5-optional-tracking-code-omitted",
+      "status": "pending",
+      "kind": "fitness"
+    },
+    {
+      "id": "T28",
+      "description": "POST /api/stock-records for a new (sku, location) returns 201 with created=true and the filed quantity (per-run-unique sku via uuid.uuid4())",
+      "ac_id": "AC4-same-key-updates-in-place",
+      "status": "pending",
+      "kind": "behavior"
+    },
+    {
+      "id": "T26",
+      "description": "POST /api/stock-records for a (sku, location) that already holds quantity 12, with quantity 20, returns 200 with created=false and quantity 20, and the pair still has exactly one row (per-run-unique sku via uuid.uuid4())",
+      "ac_id": "AC4-same-key-updates-in-place",
+      "status": "pending",
+      "kind": "behavior"
+    },
+    {
+      "id": "T27",
+      "description": "POST /api/stock-records for the same sku at two different locations returns 201 created=true for each, with two distinct ids and each response carrying its own quantity (per-run-unique sku via uuid.uuid4())",
+      "ac_id": "AC4-same-key-updates-in-place",
+      "status": "pending",
+      "kind": "behavior"
+    },
+    {
+      "id": "T30",
+      "description": "Filing (sku, location) with quantity 12 then 20 leaves exactly one row for the pair with quantity 20 and a success response, scoped to a per-run-unique key",
+      "ac_id": "AC4-same-key-updates-in-place",
+      "status": "pending",
+      "kind": "fitness",
+      "nfr_id": "NFR3-unique-addressability"
+    },
+    {
+      "id": "T31",
+      "description": "An in-place upsert of an existing (sku, location) leaves the row's created_at unchanged",
+      "ac_id": "AC4-same-key-updates-in-place",
+      "status": "pending",
+      "kind": "fitness"
+    },
+    {
+      "id": "T32",
+      "description": "POST /api/stock-records with a valid sku, location and quantity and a blank tracking_code is accepted and the response body has tracking_code null, not an empty string (per-run-unique sku via uuid.uuid4())",
+      "ac_id": "AC5-optional-tracking-code-omitted",
+      "status": "pending",
+      "kind": "behavior"
+    },
+    {
+      "id": "T33",
+      "description": "POST /api/stock-records with a valid sku, location and quantity and the tracking_code key omitted is accepted and the response body has tracking_code null (per-run-unique sku via uuid.uuid4())",
+      "ac_id": "AC5-optional-tracking-code-omitted",
+      "status": "pending",
+      "kind": "behavior"
+    },
+    {
+      "id": "T34",
+      "description": "Filing a record with a blank tracking_code stores NULL in stock_records.tracking_code, never an empty string",
+      "ac_id": "AC5-optional-tracking-code-omitted",
+      "status": "pending",
+      "kind": "fitness",
+      "nfr_id": "NFR9-graceful-rendering"
+    },
+    {
+      "id": "T9",
+      "description": "The stock record service, called with its injected session and a blank sku, location or quantity, raises a validation error naming that field and never reaches the repository write (patched, assert-not-called)",
+      "ac_id": "AC2-missing-required-field-inline",
+      "status": "pending",
+      "kind": "fitness",
+      "nfr_id": "NFR7-field-named-validation"
+    },
+    {
+      "id": "T17",
+      "description": "The stock record service, called with its injected session and an invalid quantity of -3, 2.5 or 'abc', raises a quantity-named error stating the non-negative whole number rule and never reaches the repository write (patched, assert-not-called)",
+      "ac_id": "AC3-invalid-quantity-inline",
+      "status": "pending",
+      "kind": "fitness",
+      "nfr_id": "NFR7-field-named-validation"
+    },
+    {
+      "id": "T18",
+      "description": "The stock record service, called with its injected session and quantity -3, rejects the write with a field-named quantity error and the repository write is never reached (patched, assert-not-called)",
+      "ac_id": "AC3-invalid-quantity-inline",
+      "status": "pending",
+      "kind": "fitness",
+      "nfr_id": "NFR2-never-negative"
+    },
+    {
+      "id": "T3",
+      "description": "StockRecordForm rendered alone shows the stock-record-success status region with 'Record filed' after a valid submit of a per-run-unique SKU against the real API",
+      "ac_id": "AC1-file-record-appears",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockRecordForm.test.tsx"
+    },
+    {
+      "id": "T10",
+      "description": "StockRecordForm rendered alone shows a field__error in stock-record-sku-error naming SKU when SKU is blank, keeping the entered values",
+      "ac_id": "AC2-missing-required-field-inline",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockRecordForm.test.tsx"
+    },
+    {
+      "id": "T11",
+      "description": "StockRecordForm rendered alone shows a field__error in stock-record-location-error naming location when location is blank",
+      "ac_id": "AC2-missing-required-field-inline",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockRecordForm.test.tsx"
+    },
+    {
+      "id": "T12",
+      "description": "StockRecordForm rendered alone shows a field__error in stock-record-quantity-error naming quantity when quantity is blank",
+      "ac_id": "AC2-missing-required-field-inline",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockRecordForm.test.tsx"
+    },
+    {
+      "id": "T20",
+      "description": "StockRecordForm rendered alone shows the stock-record-quantity-error stating the non-negative whole number rule for quantity -3",
+      "ac_id": "AC3-invalid-quantity-inline",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockRecordForm.test.tsx"
+    },
+    {
+      "id": "T21",
+      "description": "StockRecordForm rendered alone shows the stock-record-quantity-error stating the rule for non-numeric quantity 'abc'",
+      "ac_id": "AC3-invalid-quantity-inline",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockRecordForm.test.tsx"
+    },
+    {
+      "id": "T4",
+      "description": "Playwright e2e (client/tests/e2e/file-stock-record.spec.ts) navigates the deployed app to /stock/new, fills the stock-record-form with a crypto.randomUUID()-suffixed SKU, location A-01, quantity 12 and a tracking code, submits, and sees the stock-record-success status without a full-page reload against the live DB",
+      "ac_id": "AC1-file-record-appears",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/file-stock-record.spec.ts"
+    },
+    {
+      "id": "T5",
+      "description": "Playwright e2e (client/tests/e2e/file-stock-record.spec.ts) after filing the unique-SKU record at /stock/new reads back the stored row from the live API with quantity 12 and the entered tracking code",
+      "ac_id": "AC1-file-record-appears",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/file-stock-record.spec.ts"
+    },
+    {
+      "id": "T13",
+      "description": "Playwright e2e (client/tests/e2e/file-stock-record-required-field.spec.ts) at /stock/new submits with the SKU blank and sees the stock-record-sku-error field-named inline error next to the SKU input, with entered values kept",
+      "ac_id": "AC2-missing-required-field-inline",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/file-stock-record-required-field.spec.ts"
+    },
+    {
+      "id": "T14",
+      "description": "Playwright e2e (client/tests/e2e/file-stock-record-required-field.spec.ts) at /stock/new submits with the location blank and sees the stock-record-location-error inline error next to the location input",
+      "ac_id": "AC2-missing-required-field-inline",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/file-stock-record-required-field.spec.ts"
+    },
+    {
+      "id": "T15",
+      "description": "Playwright e2e (client/tests/e2e/file-stock-record-required-field.spec.ts) at /stock/new submits with the quantity blank and sees the stock-record-quantity-error inline error next to the quantity input",
+      "ac_id": "AC2-missing-required-field-inline",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/file-stock-record-required-field.spec.ts"
+    },
+    {
+      "id": "T16",
+      "description": "Playwright e2e (client/tests/e2e/file-stock-record-required-field.spec.ts) confirms that after a blank-field submission no stock record exists for the per-run crypto.randomUUID()-suffixed SKU in the live DB",
+      "ac_id": "AC2-missing-required-field-inline",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/file-stock-record-required-field.spec.ts"
+    },
+    {
+      "id": "T22",
+      "description": "Playwright e2e (client/tests/e2e/file-stock-record-invalid-quantity.spec.ts) at /stock/new submits quantity -3 with a crypto.randomUUID()-suffixed SKU and sees the stock-record-quantity-error stating the non-negative whole number rule",
+      "ac_id": "AC3-invalid-quantity-inline",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/file-stock-record-invalid-quantity.spec.ts"
+    },
+    {
+      "id": "T23",
+      "description": "Playwright e2e (client/tests/e2e/file-stock-record-invalid-quantity.spec.ts) at /stock/new submits quantity 2.5 and sees the stock-record-quantity-error inline next to the quantity input",
+      "ac_id": "AC3-invalid-quantity-inline",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/file-stock-record-invalid-quantity.spec.ts"
+    },
+    {
+      "id": "T24",
+      "description": "Playwright e2e (client/tests/e2e/file-stock-record-invalid-quantity.spec.ts) at /stock/new submits quantity 'abc' and sees the stock-record-quantity-error inline next to the quantity input",
+      "ac_id": "AC3-invalid-quantity-inline",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/file-stock-record-invalid-quantity.spec.ts"
+    },
+    {
+      "id": "T25",
+      "description": "Playwright e2e (client/tests/e2e/file-stock-record-invalid-quantity.spec.ts) confirms that after an invalid-quantity submission no stock record exists for the per-run unique SKU in the live DB",
+      "ac_id": "AC3-invalid-quantity-inline",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/file-stock-record-invalid-quantity.spec.ts"
+    },
+    {
+      "id": "T36",
+      "description": "Migration SC2-add-location-sku-index is reversible: downgrading to its own down_revision (the explicit revision id, not a relative step) then upgrade head recreates index ix_stock_records_location_sku on stock_records (location, sku) on the real branch database, with the table and its columns/constraints still present (marked @pytest.mark.migration)",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "fitness",
+      "schema_change_id": "SC2-add-location-sku-index"
+    },
+    {
+      "id": "T51",
+      "description": "Rows in stock_records seeded with a per-run-unique SKU before the SC2 index migration is downgraded to its own down_revision and upgraded to head still exist afterwards with identical sku, location and quantity values (scoped to the test's own rows)",
+      "ac_id": "AC5-zero-quantity-record-listed",
+      "status": "pending",
+      "kind": "fitness",
+      "schema_change_id": "SC2-add-location-sku-index"
+    },
+    {
+      "id": "T37",
+      "description": "GET /api/stock-records responds with Content-Type application/json (never text/html) and a bare JSON array body",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "fitness",
+      "nfr_id": "NFR5-spa-json-boundary"
+    },
+    {
+      "id": "T38",
+      "description": "The database engine serving the list endpoint takes its connection URL from the DATABASE_URL environment variable, with no hardcoded connection string in app/database.py",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "fitness"
+    },
+    {
+      "id": "T39",
+      "description": "StockTable rendered alone against the real EP2 list renders exactly one stock-row per filed record with its stock-cell-sku, stock-cell-location, stock-cell-quantity and stock-cell-tracking-code text",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockTable.test.tsx"
+    },
+    {
+      "id": "T40",
+      "description": "StockTable renders all A-01 rows together before B-02 rows under a location-group header per location, in the real server order",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockTable.test.tsx"
+    },
+    {
+      "id": "T43",
+      "description": "StockTable renders a not-tracked pill in stock-cell-tracking-code only for the row whose real tracking_code is null while the other row shows its code",
+      "ac_id": "AC2-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockTable.test.tsx"
+    },
+    {
+      "id": "T44",
+      "description": "StockTable renders a not-tracked pill in stock-cell-par-level on every row and leaves no cell blank or reading 'null'",
+      "ac_id": "AC2-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockTable.test.tsx"
+    },
+    {
+      "id": "T52",
+      "description": "StockTable renders a stock-row with stock-cell-quantity text 0 for a real quantity-0 record, neither hidden nor blank",
+      "ac_id": "AC5-zero-quantity-record-listed",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockTable.test.tsx"
+    },
+    {
+      "id": "T47",
+      "description": "The stock list component renders the empty-state with its empty-state-cta to /stock/new and no stock-table when the real EP2 list is empty",
+      "ac_id": "AC3-empty-state-when-no-stock",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockList.test.tsx"
+    },
+    {
+      "id": "T49",
+      "description": "The stock list component re-fetches the real EP2 list when remounted and shows a stock-row with quantity 4 for a record filed via the real API under a crypto.randomUUID-suffixed sku",
+      "ac_id": "AC4-filed-record-appears-without-reload",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/StockList.test.tsx"
+    },
+    {
+      "id": "T41",
+      "description": "Opening the real app at route / in a browser against the live DB renders the stock-table with exactly one stock-row per seeded record, each row showing its SKU, location, quantity and tracking code cells (data-testid stock-cell-sku, stock-cell-location, stock-cell-quantity, stock-cell-tracking-code), using per-run-unique SKUs",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "client"
+    },
+    {
+      "id": "T42",
+      "description": "At route / in the browser, rows seeded for location A-01 render grouped together before the B-02 row, under a location-group header per location (data-testid location-group)",
+      "ac_id": "AC1-table-lists-stock-by-location",
+      "status": "pending",
+      "kind": "client"
+    },
+    {
+      "id": "T45",
+      "description": "At route / in the browser against the live DB, a row filed without a tracking code shows the not-tracked pill (data-testid not-tracked) in its stock-cell-tracking-code while the row filed with a code shows that code",
+      "ac_id": "AC2-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "client"
+    },
+    {
+      "id": "T46",
+      "description": "At route / in the browser, the stock-cell-par-level of every seeded row shows the not-tracked pill and no cell is blank or reads 'null'",
+      "ac_id": "AC2-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "client"
+    },
+    {
+      "id": "T53",
+      "description": "At route / in the browser against the live DB, a seeded quantity-0 record is listed as a stock-row whose stock-cell-quantity reads 0 (not hidden, not blank)",
+      "ac_id": "AC5-zero-quantity-record-listed",
+      "status": "pending",
+      "kind": "client"
+    },
+    {
+      "id": "T48",
+      "description": "At route / in the browser with no stock records on the live DB, the empty-state is shown with its empty-state-cta linking to /stock/new, and no stock-table or table header is rendered",
+      "ac_id": "AC3-empty-state-when-no-stock",
+      "status": "pending",
+      "kind": "client"
+    },
+    {
+      "id": "T50",
+      "description": "In the browser, filing a record with a crypto.randomUUID()-suffixed SKU at /stock/new through the form and returning to / via the navbar Stock link (SPA navigation, no full-page navigation event) shows the new stock-row with its stock-cell-quantity 4",
+      "ac_id": "AC4-filed-record-appears-without-reload",
+      "status": "pending",
+      "kind": "client"
+    },
+    {
+      "id": "T54",
+      "description": "GET /api/stock-records/lookup for an existing (sku, location) pair responds 200 with Content-Type application/json, never text/html (NFR5 SPA JSON boundary)",
+      "ac_id": "AC1-row-opens-detail",
+      "status": "pending",
+      "kind": "fitness",
+      "nfr_id": "NFR5-spa-json-boundary"
+    },
+    {
+      "id": "T65",
+      "description": "GET /api/stock-records/lookup for an unknown (sku, location) pair responds 404 with Content-Type application/json, never an HTML error page (NFR5 SPA JSON boundary)",
+      "ac_id": "AC3-unknown-record-not-found",
+      "status": "pending",
+      "kind": "fitness",
+      "nfr_id": "NFR5-spa-json-boundary"
+    },
+    {
+      "id": "T55",
+      "description": "SkuDetail rendered for a seeded (uuid-suffixed SKU, A-01) record shows that record's SKU, location, quantity 12 and tracking code in the detail-sku, detail-location, detail-quantity and detail-tracking-code seams inside sku-detail, fetched from the real lookup API",
+      "ac_id": "AC1-row-opens-detail",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T56",
+      "description": "SkuDetail rendered for the A-01 record of a SKU also filed at B-02 shows the A-01 quantity and never the B-02 quantity",
+      "ac_id": "AC1-row-opens-detail",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T60",
+      "description": "SkuDetail for a record filed without a tracking code renders the detail-tracking-code field as a pill pill--not-tracked (detail-not-tracked) reading 'not tracked', not blank or 'null'",
+      "ac_id": "AC2-detail-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T61",
+      "description": "SkuDetail renders the detail-par-level field as a detail-not-tracked pill reading 'not tracked' because par level is absent",
+      "ac_id": "AC2-detail-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T62",
+      "description": "SkuDetail for a record with a present tracking code but absent par level renders the tracking code value and a not-tracked pill only on par level, judged independently",
+      "ac_id": "AC2-detail-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T66",
+      "description": "SkuDetail for an unknown (sku, location) renders the detail-not-found empty-state naming the SKU at the location, parsed from the real 404 response",
+      "ac_id": "AC3-unknown-record-not-found",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T67",
+      "description": "SkuDetail not-found state renders a detail-not-found-back link to / and no sku-detail field values",
+      "ac_id": "AC3-unknown-record-not-found",
+      "status": "pending",
+      "kind": "component",
+      "scenario_file": "client/tests/components/SkuDetail.test.tsx"
+    },
+    {
+      "id": "T57",
+      "description": "Playwright e2e on the deployed app at route / (real DB, per-run crypto.randomUUID()-suffixed SKU filed at A-01 and B-02): clicking the stock-row for the A-01 record navigates in-app to /sku/<sku>?location=A-01 with no full-page reload and the sku-detail seam is visible",
+      "ac_id": "AC1-row-opens-detail",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-open.spec.ts"
+    },
+    {
+      "id": "T58",
+      "description": "Playwright e2e at /sku/<sku>?location=A-01: detail-sku, detail-location, detail-quantity and detail-tracking-code show the A-01 record's SKU, A-01, 12 and A01-B7-S0042",
+      "ac_id": "AC1-row-opens-detail",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-open.spec.ts"
+    },
+    {
+      "id": "T59",
+      "description": "Playwright e2e at /sku/<sku>?location=A-01: the sku-detail view does not contain the B-02 record's quantity 7",
+      "ac_id": "AC1-row-opens-detail",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-open.spec.ts"
+    },
+    {
+      "id": "T63",
+      "description": "Playwright e2e loading /sku/<unique-sku>?location=A-01 through the real App for a record filed without tracking code: detail-tracking-code and detail-par-level each contain their own detail-not-tracked pill reading 'not tracked'",
+      "ac_id": "AC2-detail-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-untracked.spec.ts"
+    },
+    {
+      "id": "T64",
+      "description": "Playwright e2e at the untracked record's detail route: detail-sku, detail-location and detail-quantity show the unique SKU, A-01 and 5, and no field is blank or reads 'null'",
+      "ac_id": "AC2-detail-untracked-fields-show-not-tracked",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-untracked.spec.ts"
+    },
+    {
+      "id": "T68",
+      "description": "Playwright e2e opening /sku/<unique-absent-sku>?location=Z-99 directly in the real App against the live API: the detail-not-found seam names the SKU at Z-99, not a blank page, empty detail or generic error",
+      "ac_id": "AC3-unknown-record-not-found",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-not-found.spec.ts"
+    },
+    {
+      "id": "T69",
+      "description": "Playwright e2e on the not-found detail route: activating detail-not-found-back navigates in-app to / and shows the stock table page",
+      "ac_id": "AC3-unknown-record-not-found",
+      "status": "pending",
+      "kind": "client",
+      "scenario_file": "client/tests/e2e/sku-detail-not-found.spec.ts"
+    }
+  ]
+}

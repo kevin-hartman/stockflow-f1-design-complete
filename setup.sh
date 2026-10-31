@@ -32,7 +32,10 @@
 #
 # Optional:
 #   --host <url>             Workspace host. Default: derived from the chosen profile.
-#   --gh-owner <owner>       GitHub owner for the new repo. Default: `gh` default / current login.
+#   --gh-owner <owner>       GitHub owner for the new repo. If omitted and more than one
+#                            gh account is authenticated, you are shown the list and asked
+#                            to pick (never auto-selected); a single account is used as-is.
+#                            With --yes, falls back to the active gh login.
 #   --parent-dir <path>      Parent dir the project lives in. Default: the project's parent.
 #   --feature-branch <name>  Live feature branch. Default: current branch.
 #   --tiers <1|2|3>          Lakebase tier count. Default: derived from lakebase-scm-state, else 2.
@@ -170,8 +173,33 @@ fi
 [ -n "$NEW_NAME" ] || die "project name is required: ./setup.sh <project-name> (or --project-name <name>)."
 [[ "$NEW_NAME" =~ ^[a-z][a-z0-9-]{0,62}$ ]] || die "invalid project name '$NEW_NAME' (lowercase, start with a letter, 1-63 chars)."
 if [ "$NO_GITHUB" = 0 ] && [ -z "$GH_OWNER" ]; then
-  GH_OWNER="$(gh api user -q .login 2>/dev/null || true)"
-  [ -n "$GH_OWNER" ] || warn "could not infer --gh-owner from gh; pass it explicitly if repo create fails."
+  # Never silently inherit the ACTIVE gh login: with more than one authenticated account
+  # that quietly lands the repo under the wrong owner (e.g. a *_data alt). Ask, exactly
+  # like the profile pick in Step 1. --gh-owner bypasses this; --yes uses the active login.
+  _GH_ACTIVE="$(gh api user -q .login 2>/dev/null || true)"
+  _GH_ACCTS="$(gh auth status 2>/dev/null | sed -nE 's/.*account ([A-Za-z0-9_-]+).*/\1/p' | sort -u)"
+  if [ "$ASSUME_YES" = 1 ]; then
+    GH_OWNER="$_GH_ACTIVE"
+    [ -n "$GH_OWNER" ] || die "--gh-owner is required with --yes (could not infer owner from gh)."
+  elif [ "$(printf '%s\n' "$_GH_ACCTS" | grep -c .)" -gt 1 ]; then
+    log "GitHub accounts authenticated with gh (active: ${_GH_ACTIVE:-none}):"
+    printf '%s\n' "$_GH_ACCTS" | sed 's/^/    /'
+    printf '%s? GitHub owner for the new repo: %s' "$C_YELLOW" "$C_OFF"; read -r GH_OWNER </dev/tty
+    [ -n "$GH_OWNER" ] || die "no GitHub owner chosen."
+  else
+    GH_OWNER="$_GH_ACTIVE"
+    [ -n "$GH_OWNER" ] || warn "could not infer --gh-owner from gh; pass it explicitly if repo create fails."
+  fi
+  # Steps 6/6b (repo create, runner token) run as the ACTIVE gh account, so make it match
+  # the chosen owner — else `gh repo create $GH_OWNER/...` errors when the owner is a
+  # different personal account than the one currently active.
+  if [ -n "$GH_OWNER" ] && [ "$GH_OWNER" != "$_GH_ACTIVE" ]; then
+    if printf '%s\n' "$_GH_ACCTS" | grep -qxF "$GH_OWNER"; then
+      run gh auth switch --hostname github.com --user "$GH_OWNER" && ok "active gh account → $GH_OWNER"
+    else
+      warn "owner '$GH_OWNER' is not a gh-authenticated account – repo create may fail (gh auth login --user $GH_OWNER)."
+    fi
+  fi
 fi
 # Tier count: honor --tiers, else derive from scm-state, else default 2.
 if [ -z "$TIERS" ]; then

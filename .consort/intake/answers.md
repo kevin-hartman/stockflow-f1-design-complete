@@ -209,7 +209,7 @@ Product Owner re-creates one `.consort/features/<feature-id>/feature-request.md`
 per feature below. **The intake step must not treat this as "guidance only" and
 drop it:** it must reflect this backlog as the roadmap in `product-overview.md`
 and the findability/search need in `nfrs.md`, so the whole set — including
-`F9-stock-search` and the two-part live-data refactor (`F6-split-tracking-code`
+`F9-stock-search` and the two-part live-data refactor (`F6-split-tracking-code-expand`
 expand/verify, then `F10-retire-tracking-code` contract) — survives
 synthesis through to `/plan`. Each request is re-created in the exact shape of the
 F1 example already on disk: YAML
@@ -396,9 +396,9 @@ off first.
 - **Builds on:** F1-stock-visibility (the stock record) and F2-stock-adjustment
   (the audited, never-negative write path).
 
-### F6-split-tracking-code
+### F6-split-tracking-code-expand
 
-- **Frontmatter hint:** `author: Product Owner`, `feature: F6-split-tracking-code`,
+- **Frontmatter hint:** `author: Product Owner`, `feature: F6-split-tracking-code-expand`,
   `sprint: 2`.
 - **Title (H1):** Split the tracking code into batch and serial, verified live (tracking code retained).
 - **Why:** The V1 tracking code from F1 bundles location, batch, and serial into
@@ -595,5 +595,5 @@ off first.
 - **Open for confirmation:** This should ship only after F6 (the split) has been
   deployed and the team has signed off that the split is correct and complete.
   Please confirm that sign-off before this is scheduled.
-- **Builds on:** F6-split-tracking-code (the batch + serial columns and the backfill
+- **Builds on:** F6-split-tracking-code-expand (the batch + serial columns and the backfill
   it added, with the tracking code still present).

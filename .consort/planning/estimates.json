@@ -28,7 +28,7 @@
     {
       "feature_id": "F6-split-tracking-code-expand",
       "size": "L",
-      "rationale": "Additive expand migration with delimiter backfill, dual-write, integrity probe surfaced in app; data-preservation risk."
+      "rationale": "Additive expand migration with delimiter backfill (NULL on nonconforming), integrity probe surfaced in app, stage pills + migration overlay, parent-aware branch schema diff; live-data preservation risk."
     },
     {
       "feature_id": "F9-stock-search",
@@ -49,11 +49,6 @@
       "feature_id": "F10-retire-tracking-code",
       "size": "S",
       "rationale": "Contract migration dropping combined code with reversible round-trip test; gated on F6."
-    },
-    {
-      "feature_id": "F6-split-tracking-code",
-      "size": "L",
-      "rationale": "Additive expand migration with delimiter backfill (NULL on nonconforming), integrity probe surfaced in app, stage pills + migration overlay, parent-aware branch schema diff; live-data preservation risk."
     }
   ]
 }

@@ -45,4 +45,4 @@ the spike reshaped the backlog). Do not merge spike code into a feature branch.
 
 ## Kit version
 
-Pinned to: `0.4.46`
+Pinned to: `0.4.47`

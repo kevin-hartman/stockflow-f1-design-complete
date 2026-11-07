@@ -176,7 +176,8 @@ kit — but it auto-commits ONLY the kit-owned surface, so you MUST also commit 
 artifacts it leaves in the working tree and drop its transient rollback record. Run every step below
 against a FRESH clone of each snapshot; push to the snapshot repo only, never the working project's.
 
-Index: 1 clone → 2 cache → 3 consort-upgrade → 4 commit E2E artifacts → 5 drop transients →
+Index: 1 clone → 2 cache → 3 consort-upgrade → 4 commit E2E artifacts →
+4b bring forward refresh-MISSED files (setup.ts + .gitignore) → 5 drop transients →
 6 verify surface complete → 7 forward-merge → 8 push.
 
 ```bash
@@ -197,6 +198,28 @@ LAKEBASE_KIT_REF=vX.Y.Z ./scripts/lk consort-upgrade
 #    (tests/e2e/conftest.py), plus any other NON-transient file the upgrade left behind.
 git add pyproject.toml tests/e2e/conftest.py
 git commit -m "chore(kit): E2E enablement artifacts for vX.Y.Z"
+
+# 4b. Bring forward kit-owned scaffold files consort-upgrade's refresh MISSES (do NOT trust the refresh
+#     to be complete). refreshReporter/refreshSurface do not cover every kit-owned file, so diff the
+#     project's test instrumentation + .gitignore against the TARGET templates in the cache and copy
+#     over any that differ. KNOWN misses (as of v0.4.45; update this list when you find more):
+#       - client/tests/setup.ts  — refreshReporter skips it (it had NEITHER the owner-header threading
+#                                   nor configure({ asyncUtilTimeout }), both kit-owned instrumentation).
+#       - .gitignore baseline lines — consort-upgrade never touches .gitignore; v0.4.45 added the
+#                                   per-test capture sidecars .consort/{test-run,test-interactions,
+#                                   table-snapshots}.jsonl. A stale .gitignore lets a rehydrated BUILD
+#                                   regenerate them UNtracked, then a corpus `git add .consort`/`-A`
+#                                   sweeps them into history where they grow past GitHub's 100MB limit.
+SCM=~/.cache/consort/vX.Y.Z/node_modules/@databricks-solutions/lakebase-scm-utils/templates/project
+diff client/tests/setup.ts "$SCM/client/tests/setup.ts"   # differs? cp "$SCM/client/tests/setup.ts" client/tests/setup.ts
+diff <(grep '^[.]' .gitignore) <(grep '^[.]' "$SCM/common/.gitignore.base")   # add any baseline-only lines to .gitignore verbatim (keep the kit's comment)
+#     (A build snapshot's feature branch force-commits the capture sidecars for dashboard replay; they
+#      STAY committed — .gitignore never untracks a tracked file. This is the "add to the repo, then
+#      gitignore again" pattern; do NOT git rm them.)
+git add client/tests/setup.ts .gitignore
+git commit -m "chore(kit): bring forward refresh-missed scaffold files for vX.Y.Z (setup.ts + .gitignore)"
+# FOLLOW-UP (kit): refreshReporter should refresh client/tests/setup.ts, and consort-upgrade should
+# MERGE new .gitignore.base entries into the project .gitignore — then step 4b becomes a no-op.
 
 # 5. Drop the transient rollback record — it must NEVER ship in a snapshot.
 rm -f .lakebase/kit-ref.prev          # (.lakebase/kit-ref.local is gitignored; leave it.)

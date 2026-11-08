@@ -52,11 +52,12 @@ own `/plan` once the previous sprint's learning is folded in.
 | F3-inbound-receipt | 2 | Receive a known supplier's quantity to a chosen location (R2, R7) | Yes |
 | F4-outbound-pick | 2 | Pick for an order; reject an overcommit with a field-named message (R2, R7) | Yes |
 | F5-cycle-count | 2 | Count a shelf, show the variance, reconcile | Yes |
-| F6-split-tracking-code-expand | 2 | Add batch + serial and backfill them by delimiter; keep the combined code; show the integrity-probe count in the app (R1, R3, R8) | Yes (pills, probe count, stage labels) |
+| F6-split-tracking-code-expand | 2 | Add batch + serial and backfill them by delimiter; keep the combined code; show the integrity-probe count in the app (R1, R3, R8) | Yes (pills, probe count) |
 | F9-stock-search | 2 | Read-only SKU/location search on home, with a no-match empty state (R10) | Yes |
 | F7-multi-warehouse | 3 | Scope stock to a warehouse; existing rows go under a default warehouse | Yes |
 | F8-barcode-scan | 3 | Scan-driven receive/pick/adjust/count with in-place feedback under 200ms (R6) | Yes |
 | F10-retire-tracking-code | 3 | Drop the combined code (reversible round-trip); gated on F6 being signed off | Yes |
+| F11-refactor-walkthrough | 3 | Throwaway demo (never shipped): on a disposable branch replay reset → expand → verify → drop to show F6 + F10 together; deliberately outside the Required NFRs | Demo-only |
 
 ---
 

@@ -34,7 +34,7 @@
     - No silent data loss: codes that do not parse leave batch and serial NULL (never guessed, never dropped), and an **integrity probe surfaces the count of nonconforming rows** for the Product Owner to review and sign off before this increment is accepted.
     - The accepted end state of this increment is the **expanded** schema — the combined code AND the new batch + serial columns live, backfilled and verified. It is deliberately NOT a drop; the old column is retained on purpose so the split can be proven in real use before anything destructive happens. The add + backfill is additive so reads keep working throughout (R8).
     - Proof is the parent-aware schema diff (batch + serial **added**, the combined code still present) plus the integrity-probe warning count, run against the paired Lakebase branch (R1, R3, R4).
-    - This is a **UI-visible** refactor walked step by step on an isolated branch (never touching staging/production), and that visibility is part of the feature: the ordinary home table and SKU detail render correctly driven by the live schema (combined code → combined + batch/serial once backfilled), with the new Batch and Serial columns marked with a **new-to-verify** pill and the combined tracking-code column marked with a **to-be-retired** pill so the audience sees exactly what was added and what will be eliminated; the integrity-probe nonconforming-row count is shown **in the app** for sign-off; each screen carries a stage label (today / transition-to-verify) and a running migration shows an overlay that clears when the step finishes. The stepwise walk (reset → expand+backfill → verify) pauses between steps so each UI change is observable, with a "before" seed that includes nonconforming codes so the probe count is visibly non-zero.
+    - This is a **UI-visible** refactor, and that visibility is part of the feature: the ordinary home table and SKU detail render correctly driven by the live schema (combined code → combined + batch/serial once backfilled), with the new Batch and Serial columns marked with a **new-to-verify** pill and the combined tracking-code column marked with a **to-be-retired** pill so the audience sees exactly what was added and what will be eliminated; the integrity-probe nonconforming-row count is shown **in the app** for sign-off. (The paused, step-by-step *visual walkthrough* of the migration — stage labels and a migration overlay replayed on an isolated branch — is a separate throwaway demo, F11, not part of this shipped increment.)
   - **Retire the combined tracking code (contract)** — the **second increment** of the refactor, taken only **after stakeholders are comfortable** the split above worked and lost nothing: **drop the combined tracking-code column entirely** so the stock record carries batch and serial only, and update the home table and SKU detail to show batch/serial only (the combined-code column disappears, "not tracked" per field where empty). The drop migration is **reversible as a proven round-trip** (the down path reconstructs a combined code from the canonical location plus the split-out batch and serial; re-applying up drops it again), and the accepted end state is the up-migrated schema with the combined code dropped — never left on the down migration. Proof is the parent-aware schema diff showing the combined code **removed** alongside batch + serial present, on the paired Lakebase branch (R1, R3, R4, R8, R9). Gated on the expand feature being deployed and signed off (sprint 3).
   - **Stock search** — find stock by SKU and location from the home view; read-only, reusing existing records with no new write path (sprint 2).
   - **Multi-warehouse** — operate several warehouses from one deployment, each stock figure scoped to its warehouse, existing records preserved under a default warehouse (sprint 3).
@@ -220,7 +220,7 @@ carry its `R<n>` NFR references inline on the bullets they apply to, exactly the
 way the F1 example does — the `R<n>` ids are defined in `.consort/nfrs.md` and
 only referenced where the NFR genuinely applies. The sprint numbers come from the
 backlog table: F1 is sprint 1; F2, F3, F4, F5, F6, and F9 are sprint 2; F7, F8,
-and F10 are sprint 3. F10-retire-tracking-code is the contract half of the
+F10, and F11 are sprint 3. F10-retire-tracking-code is the contract half of the
 tracking-code refactor and is gated on F6 (the split) being deployed and signed
 off first.
 
@@ -440,25 +440,18 @@ off first.
   - The integrity probe's nonconforming-row count is shown on screen for sign-off —
     the count of rows that could not be split (left NULL, never guessed, never
     dropped) is visible for my review, not just logged (R1).
-  - The migration stage and run status are visible: a stage label on the home title
-    ("what it looks like today" / "transition state for verification") plus the
-    pills above once the split fields exist. While a migration step runs, an overlay
-    names the step and clears the moment it finishes — never stuck on screen (R5).
-  - Walk the increment one story at a time against the branch — reset to the
-    production baseline, expand (add + backfill), verify (the probe count plus the
-    live transition UI, which *is* the verification) — pausing between steps so each
-    UI change is observable. The "before" seed includes nonconforming codes so the
-    probe count is visibly non-zero (R1, R8).
+  - The paused, step-by-step *visual walkthrough* of the migration — stage labels, a
+    migration overlay, and the reset → expand → verify walk on an isolated branch —
+    is the throwaway F11 demo, not part of this shipped increment.
 - **What I see when it's done:** On the paired branch, the schema diff shows
   `batch_number` + `serial_number` added with the tracking code still present, the
   integrity probe reports the nonconforming-row count, and every sprint-1 row is
-  intact. I can walk it live on the isolated branch: the home table and SKU detail
-  re-render from "today" (tracking code only) to "transition state for verification"
-  (tracking code with its to-be-retired pill, plus Batch and Serial with their
-  new-to-verify pills, "not tracked" where empty), the probe count is on screen for
-  my sign-off, and a running step shows an overlay that clears when it finishes —
-  staging and production untouched. The tracking code is still there on purpose;
-  dropping it is F10.
+  intact. The home table and SKU detail render from the live schema with the
+  tracking code shown alongside Batch and Serial (tracking code with its
+  to-be-retired pill, plus Batch and Serial with their new-to-verify pills, "not
+  tracked" where empty), and the probe count is on screen for my sign-off — staging
+  and production untouched. The tracking code is still there on purpose; dropping it
+  is F10, and the paused visual walkthrough is the throwaway F11 demo.
 - **Not in this feature:** Dropping the tracking-code column — that is the separate
   contract feature F10-retire-tracking-code, taken only after this split is deployed
   and signed off. Also not part of this feature: the presentation-only demo
@@ -597,3 +590,36 @@ off first.
   Please confirm that sign-off before this is scheduled.
 - **Builds on:** F6-split-tracking-code-expand (the batch + serial columns and the backfill
   it added, with the tracking code still present).
+
+### F11-refactor-walkthrough
+
+- **Frontmatter hint:** `author: Product Owner`, `feature: F11-refactor-walkthrough`,
+  `sprint: 3`.
+- **Title (H1):** Guided refactor walkthrough — a throwaway demo of the F6 → F10 journey.
+- **Why:** Once the split (F6) and the retire (F10) are both deployed and signed off,
+  I want to *show* stakeholders the whole tracking-code refactor as one observable
+  story — expand, verify, then the reversible drop — without touching anything real.
+  This is a **throwaway demo**: never shipped into the product, no production
+  guarantees of its own, discarded after the showing.
+- **What I want:**
+  - Run entirely on a **throwaway isolated branch** — it NEVER touches staging or
+    production, and nothing it does is merged into the trunk or the final product.
+  - **Recreate its own "before" state** by seeding nonconforming codes, so the
+    integrity-probe count is visibly non-zero without depending on live data.
+  - Replay the refactor as **paused, observable steps**: reset → expand + backfill →
+    verify → drop (the reversible contract), pausing between steps.
+  - Each screen carries a **stage label** (today / transition-to-verify) and a running
+    step shows a **migration overlay** that clears when it finishes.
+  - Show how **F6 (expand)** and **F10 (drop)** fit together end to end.
+- **What I see when it's done:** On the disposable demo branch I step through reset,
+  expand + backfill, verify, and the drop, pausing at each with the stage label and
+  overlay, then throw the branch away — production untouched.
+- **NFRs (deliberately limited):** F11 is **outside the project's Required NFRs**
+  (R1/R3/R4/R8 …) — those bind the shipped features (F6/F10), not this replay. Only
+  isolation (never read/write staging or production; never merged into the trunk, so
+  it never enters the production CI merge gate) and observability (paused, labeled
+  steps) apply.
+- **Not in this feature:** any production code or data path — F11 ships nothing; the
+  real migrations and their guarantees live in F6 and F10.
+- **Builds on:** F6-split-tracking-code-expand and F10-retire-tracking-code — both
+  deployed and signed off first; F11 only replays the journey they delivered.

@@ -102,6 +102,6 @@ its own deploy gate.
 
 ## Kit version
 
-Pinned to: `0.4.48`
+Pinned to: `0.4.49`
 
 The `lakebase-update-commands` bin re-pulls this command's canonical template while preserving any project hooks.
